@@ -1,0 +1,49 @@
+- !<AssetImportMetadata/6eb96dcf-0d19-4999-b09e-afd67ab7da98>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 4b7b60b4-187d-4c4d-9abb-73afe188fec2
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 4b7b60b4-187d-4c4d-9abb-73afe188fec2
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> c9595198-4e27-463a-9bb8-76b62761cedb
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/c9595198-4e27-463a-9bb8-76b62761cedb>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 542427a0-4560-4696-ad46-c16f539587e4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    anchor: false
+    cameraObject: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - anchor: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      cameraObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input SceneObject anchor {"hint":"Instrument and dock move together under this authored world anchor"}'
+    - '// @input SceneObject cameraObject {"hint":"World-tracked wearer camera"}'

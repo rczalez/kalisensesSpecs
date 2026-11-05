@@ -1,4 +1,10 @@
 import {MIDIS,NOTES} from "./KalisensesMusic";
+import {AMBER,SECONDARY,ACCENT,SURFACE,DEEP,INK} from "./KalisensesTheme";
+import {Interactable} from "SpectaclesInteractionKit.lspkg/Components/Interaction/Interactable/Interactable";
+import {TargetingMode} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Interactor";
+import Event from "SpectaclesInteractionKit.lspkg/Utils/Event";
+import {HandInputData} from "SpectaclesInteractionKit.lspkg/Providers/HandInputData/HandInputData";
+import {NotePointer} from "./KalisensesInput";
 /** Parametric geometry in cm: animated tines, a 35×25 body and a 70×50 tabletop. */
 @component
 export class KalisensesInstrument extends BaseScriptComponent {
@@ -9,23 +15,45 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public lengths=MIDIS.map(m=>18-(m-60)*.36);
   public highlighted=-1;
   public fireflyCount=0;
+  public onNoteDown=new Event<NotePointer>();
+  public onNoteUp=new Event<string>();
+  private pinchTargets:Interactable[]=[];
+  private hovered=new Set<number>();
+  public hoveredNote=-1;
+  private pinchEnabled=false;
   private mats:Material[]=[];private flashes:number[]=new Array(17).fill(-100);
   private flies:{object:SceneObject;mat:Material;born:number;seed:number}[]=[];
   private unit!:RenderMesh;
   public initializeInstrument() {
     this.unit=this.boxMesh();
-    this.box("Virtual Tabletop",this.sceneObject,new vec3(0,-3,0),new vec3(70,2,50),new vec4(.18,.32,.36,1));
-    for(const x of [-29,29]) for(const z of [-19,19]) this.box("Table Leg",this.sceneObject,new vec3(x,-39,z),new vec3(2,70,2),new vec4(.12,.24,.28,1));
-    this.box("Kalimba Body 35x25",this.sceneObject,new vec3(0,0,0),new vec3(35,4,25),new vec4(.62,.32,.13,1));
-    this.box("Resonant Face",this.sceneObject,new vec3(0,2.05,0),new vec3(33,.18,23),new vec4(.78,.48,.24,1));
+    if(global.deviceInfoSystem.isEditor()) {
+      this.box("Virtual Tabletop",this.sceneObject,new vec3(0,-3,0),new vec3(70,2,76),SURFACE);
+      for(const x of [-29,29]) for(const z of [-29,29]) this.box("Table Leg",this.sceneObject,new vec3(x,-39,z),new vec3(2,70,2),DEEP);
+    }
+    this.box("Kalimba Body 35x25",this.sceneObject,new vec3(0,0,0),new vec3(35,4,25),DEEP);
+    this.box("Resonant Face",this.sceneObject,new vec3(0,2.05,0),new vec3(33,.18,23),SURFACE);
+    for(const x of [-17,17])this.box("Edge Inlay",this.sceneObject,new vec3(x,2.1,0),new vec3(.35,.2,23),ACCENT);
     // Decorative sound-hole inset, kept clear of the labels.
     this.box("Sound Hole",this.sceneObject,new vec3(0,2.2,7.8),new vec3(5,.1,3),new vec4(.16,.22,.25,1));
-    this.box("Bridge",this.sceneObject,new vec3(0,2.7,-8.5),new vec3(31,.6,1.2),new vec4(.85,.73,.43,1));
+    this.box("Bridge",this.sceneObject,new vec3(0,2.7,-8.5),new vec3(31,.6,1.2),AMBER);
     NOTES.forEach((note,i)=>{
       const l=this.lengths[i];const s=this.box("Tine-"+note,this.sceneObject,new vec3((i-8)*1.8,3,-9+l/2),new vec3(1.35,.28,l),new vec4(.72,.84,.9,1));
       this.tines.push(s);this.mats.push((s.getComponent("Component.RenderMeshVisual") as RenderMeshVisual).mainMaterial);
+      const collider=s.createComponent("Physics.ColliderComponent") as ColliderComponent;
+      const shape=Shape.createBoxShape();shape.size=new vec3(1,4,1);collider.shape=shape;
+      const target=s.createComponent(Interactable.getTypeName()) as Interactable;target.targetingMode=TargetingMode.Indirect;target.enabled=false;this.pinchTargets.push(target);
+      target.onHoverEnter.add(()=>{this.hovered.add(i);this.hoveredNote=i;});target.onHoverExit.add(()=>{this.hovered.delete(i);this.hoveredNote=this.hovered.size?Array.from(this.hovered)[0]:-1;});
+      target.onInteractorTriggerStart.add(e=>this.onNoteDown.invoke({index:i,contact:String(e.interactor.inputType),interactor:e.interactor}));
+      const release=(e)=>{if(!e.interactor.isTriggering)this.onNoteUp.invoke(String(e.interactor.inputType));};
+      target.onInteractorTriggerEnd.add(release);target.onInteractorTriggerEndOutside.add(release);
+      // Cancellation or crossing tines while held must not re-arm a pinch.
     });
+    for(const side of ["left","right"] as const) {
+      const hand=HandInputData.getInstance().getHand(side);
+      hand.onPinchUp.add(()=>this.onNoteUp.invoke(side==="left"?"1":"2"));
+    }
   }
+  public setPinchEnabled(enabled:boolean) {if(enabled===this.pinchEnabled)return;this.pinchEnabled=enabled;this.pinchTargets.forEach(t=>t.enabled=enabled);if(!enabled){this.hovered.clear();this.hoveredNote=-1;}}
   private boxMesh():RenderMesh {
     const b=new MeshBuilder([{name:"position",components:3},{name:"normal",components:3,normalized:true}]);b.topology=MeshTopology.Triangles;b.indexType=MeshIndexType.UInt16;
     const v:number[]=[],ix:number[]=[];
@@ -53,7 +81,7 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public updateVisuals(time:number,cue:number) {
     this.highlighted=cue;
     this.tines.forEach((s,i)=>{const age=time-this.flashes[i];const played=age<.45;
-      this.mats[i].mainPass.baseColor=played?new vec4(.4,1,.66,1):i===cue?new vec4(1,.86,.3,1):new vec4(.72,.84,.9,1);
+      this.mats[i].mainPass.baseColor=played?new vec4(.4,1,.66,1):i===cue?AMBER:this.hovered.has(i)?SECONDARY:INK;
       const p=s.getTransform().getLocalPosition();p.y=3+(played?Math.sin(age*100)*.1*Math.exp(-age*8):0);s.getTransform().setLocalPosition(p);
     });
     for(let i=this.flies.length-1;i>=0;i--) {

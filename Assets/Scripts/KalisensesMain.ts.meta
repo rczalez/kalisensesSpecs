@@ -30,6 +30,8 @@
   ScriptInputsHidden:
     cameraObject: false
     instrument: false
+    lockPreviewCamera: false
+    placement: false
     ui: false
     volume: false
   ScriptTypesHidden:
@@ -44,7 +46,9 @@
     - ui: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
       instrument: !<MappingBased.AssignableType_2> 00000000-0000-0000-0000-000000000000
       cameraObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      placement: !<MappingBased.AssignableType_3> 00000000-0000-0000-0000-000000000000
       volume: 0.300000
+      lockPreviewCamera: true
   ScriptTypes:
     -
       {}
@@ -52,4 +56,6 @@
     - '// @input AssignableType_1 ui {"hint":"World-space UIKit views"}'
     - '// @input AssignableType_2 instrument {"hint":"Measured animated instrument"}'
     - '// @input SceneObject cameraObject {"hint":"Preview camera"}'
+    - '// @input AssignableType_3 placement {"hint":"Confirmed world-surface placement; preview uses the authored virtual table"}'
     - '// @input float volume = 0.3 {"hint":"Low latency instrument volume", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input bool lockPreviewCamera = true {"hint":"Laptop only: keep note keys from navigating the preview camera. Disable to inspect other viewpoints."}'

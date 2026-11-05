@@ -28,6 +28,7 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
+    backingOpacity: false
     fontScale: false
     ink: false
   ScriptTypesHidden:
@@ -41,9 +42,11 @@
   DefaultScriptInputs:
     - fontScale: !<float> 1.000000
       ink: !<Vec4> {x: 0.920000, y: 1.000000, z: 1.000000, w: 1.000000}
+      backingOpacity: 0.960000
   ScriptTypes:
     -
       {}
   InputLines:
     - '// @input float fontScale = 1 {"hint":"Scale of all labels"}'
-    - '// @input vec4 ink = {0.92,1,1,1} {"hint":"Bright text tint", "widget":"color"}'
+    - '// @input vec4 ink {"hint":"Warm neutral text tint", "widget":"color"}'
+    - '// @input float backingOpacity = 0.96 {"hint":"Backing opacity in preview; validate on see-through Specs", "widget":"slider", "min":0.6, "max":1, "step":0.05}'
