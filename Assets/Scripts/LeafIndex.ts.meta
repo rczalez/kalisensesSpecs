@@ -1,0 +1,46 @@
+- !<AssetImportMetadata/22150c2e-0fc4-40a4-acb4-e431169ec0b5>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 6a4c879d-3687-4ef3-8113-4ee6725d2948
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 6a4c879d-3687-4ef3-8113-4ee6725d2948
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 7d3dbf13-2e94-4cbd-a110-c73de8263f62
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/7d3dbf13-2e94-4cbd-a110-c73de8263f62>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: a97617ec-437f-4e05-9304-54665d9c3bb9
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    previewScenario: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - previewScenario: ""
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input string previewScenario {"hint":"Optional preview test to launch after reset. Leave empty for normal play."}'
