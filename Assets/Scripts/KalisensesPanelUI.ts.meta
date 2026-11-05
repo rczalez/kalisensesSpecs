@@ -1,0 +1,49 @@
+- !<AssetImportMetadata/b64f80fa-b166-4ac4-9d23-88df7cb40bbf>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 9243fb75-b772-4894-93f4-d3a9e17d8d40
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 9243fb75-b772-4894-93f4-d3a9e17d8d40
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 2123e24c-9591-4f54-9abb-e4b86aace6b7
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/2123e24c-9591-4f54-9abb-e4b86aace6b7>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 38eb8acc-2fc1-4f66-a29e-448fcce6f087
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    fontScale: false
+    ink: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - fontScale: !<float> 1.000000
+      ink: !<Vec4> {x: 0.920000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input float fontScale = 1 {"hint":"Scale of all labels"}'
+    - '// @input vec4 ink = {0.92,1,1,1} {"hint":"Bright text tint", "widget":"color"}'

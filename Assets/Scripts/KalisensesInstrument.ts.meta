@@ -1,0 +1,52 @@
+- !<AssetImportMetadata/5c4126ea-772c-4cd0-8824-dcd022474ab3>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 0786a5d3-9875-49b4-b5f7-13ac939473ed
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 0786a5d3-9875-49b4-b5f7-13ac939473ed
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> cdbddd55-72a2-438d-9a60-88bef4ec0636
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/cdbddd55-72a2-438d-9a60-88bef4ec0636>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: bedd8e0b-c2c2-41af-8b50-31e2581b58d2
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    glow: false
+    sphere: false
+    surface: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - surface: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      glow: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      sphere: !<reference.RenderMesh> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input Asset.Material surface {"hint":"Surface material"}'
+    - '// @input Asset.Material glow {"hint":"Firefly material"}'
+    - '// @input Asset.RenderMesh sphere {"hint":"Firefly sphere mesh"}'
