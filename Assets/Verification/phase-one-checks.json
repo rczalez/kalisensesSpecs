@@ -1,0 +1,160 @@
+{
+  "date": "2026-11-05",
+  "environment": "Lens Studio 5.23.2.26081320 / SPECS 27 / Interactive Sunlit Room",
+  "keyboard": [
+    "I 15:03:16.146 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY R",
+    "I 15:03:16.377 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY R -> D6 tine=0 mode=free",
+    "I 15:03:16.377 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY A",
+    "I 15:03:16.560 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY A -> B5 tine=1 mode=free",
+    "I 15:03:16.560 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY S",
+    "I 15:03:16.746 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY S -> G5 tine=2 mode=free",
+    "I 15:03:16.747 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY D",
+    "I 15:03:16.929 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY D -> E5 tine=3 mode=free",
+    "I 15:03:16.930 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY F",
+    "I 15:03:17.091 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY F -> C5 tine=4 mode=free",
+    "I 15:03:17.091 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY X",
+    "I 15:03:17.281 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY X -> A4 tine=5 mode=free",
+    "I 15:03:17.282 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY C",
+    "I 15:03:17.468 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY C -> F4 tine=6 mode=free",
+    "I 15:03:17.468 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY V",
+    "I 15:03:17.629 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY V -> D4 tine=7 mode=free",
+    "I 15:03:17.630 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY B",
+    "I 15:03:17.827 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY B -> C4 tine=8 mode=free",
+    "I 15:03:17.828 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY N",
+    "I 15:03:17.999 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY N -> E4 tine=9 mode=free",
+    "I 15:03:18.000 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY M",
+    "I 15:03:18.177 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY M -> G4 tine=10 mode=free",
+    "I 15:03:18.177 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY L",
+    "I 15:03:18.379 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=free",
+    "I 15:03:18.380 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY H",
+    "I 15:03:18.570 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY H -> D5 tine=12 mode=free",
+    "I 15:03:18.571 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY J",
+    "I 15:03:18.755 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY J -> F5 tine=13 mode=free",
+    "I 15:03:18.756 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY K",
+    "I 15:03:18.958 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY K -> A5 tine=14 mode=free",
+    "I 15:03:18.959 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY U",
+    "I 15:03:19.114 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY U -> C6 tine=15 mode=free",
+    "I 15:03:19.114 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:11] [ACCEPTANCE] KEY_READY I",
+    "I 15:03:19.296 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY I -> E6 tine=16 mode=free",
+    "I 15:03:19.297 [Preview 1] [Assets/Scripts/KalisensesKeyboardScenario.ts:15] [ACCEPTANCE] PASS 17 preview-delivered keys; held/chord hardware checks separate",
+    "I 15:03:19.297 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 33.746s]PASSED: kalisenses-17-keyboard"
+  ],
+  "physicalHold": [
+    "I 15:11:00.127 [Preview 1] [Assets/Scripts/KalisensesPhysicalHoldScenario.ts:9] [DELIVERY] HOLD_READY",
+    "I 15:11:00.281 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=free",
+    "I 15:11:01.162 [Preview 1] [Assets/Scripts/KalisensesPhysicalHoldScenario.ts:10] [DELIVERY] REPRESS_READY",
+    "I 15:11:01.382 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=free",
+    "I 15:11:01.383 [Preview 1] [Assets/Scripts/KalisensesPhysicalHoldScenario.ts:12] [DELIVERY] CHORD_READY",
+    "I 15:11:01.588 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=free",
+    "I 15:11:01.694 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY M -> G4 tine=10 mode=free",
+    "I 15:11:01.694 [Preview 1] [Assets/Scripts/KalisensesPhysicalHoldScenario.ts:13] [ACCEPTANCE] PASS injected hold, release/repress and overlapping L/M key downs; physical rollover remains a hardware check",
+    "I 15:11:01.695 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  1.576s]PASSED: kalisenses-physical-hold"
+  ],
+  "b4": [
+    "I 15:11:53.182 [Preview 1] [Assets/Scripts/KalisensesB4KeyboardScenario.ts:8] [ACCEPTANCE] FREE_READY inject L",
+    "I 15:11:53.355 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=free",
+    "eview::PreviewWorker #4) Es::Preview::PreviewWorker::onSceneCreated::::operator()] [Preview 1] [Assets/Scripts/KalisensesB4KeyboardScenario.ts:8] [ACCEPTANCE] FREE_READY inject L",
+    "I 15:11:57.993 [Preview 1] [Assets/Scripts/KalisensesB4KeyboardScenario.ts:17] [ACCEPTANCE] FOLLOW_READY inject L",
+    "I 15:11:58.183 [Preview 1] [Assets/Scripts/KalisensesMain.ts:135] [Kalisenses] KEY L -> B4 tine=11 mode=playing",
+    "I 15:11:58.748 [Preview 1] [Assets/Scripts/KalisensesMain.ts:120] [Kalisenses] RESULTS {\"percent\":100,\"correct\":1,\"incorrect\":0,\"missed\":0}",
+    "I 15:11:58.748 [Preview 1] [Assets/Scripts/KalisensesB4KeyboardScenario.ts:20] [ACCEPTANCE] PASS L -> B4, audio active and tine 11 highlighted in both modes",
+    "I 15:11:58.749 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 34.876s]PASSED: kalisenses-b4-keyboard"
+  ],
+  "finalSuite": [
+    {
+      "id": "kalisenses-menu-layout",
+      "status": "passed",
+      "evidence": [
+        "I 15:18:08.843 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:18:37.818 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY menu",
+        "I 15:18:38.201 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY input",
+        "I 15:18:38.583 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY placement",
+        "I 15:18:38.951 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY select",
+        "temp\\StudioPlugins\\GUI\\Preview\\Impl\\Src\\Worker\\PreviewWorker.cpp:827 (@Es::Preview::PreviewWorker #4) Es::Preview::PreviewWorker::onSceneCreated::::operator()] [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:18:39.352 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY free",
+        "I 15:18:39.743 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY performance",
+        "I 15:18:44.146 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:30] [VISUAL] READY results",
+        "I 15:18:44.375 [Preview 1] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:38] [ACCEPTANCE] PASS all seven UI views and 17 note-pad bounds: positive text rectangles, readable type sizes, projected label centers",
+        "I 15:18:44.375 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 35.533s]PASSED: kalisenses-menu-layout"
+      ]
+    },
+    {
+      "id": "kalisenses-input-methods",
+      "status": "passed",
+      "evidence": [
+        "I 15:18:47.689 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:19:31.157 [Preview 1] [Assets/Scripts/KalisensesInputScenario.ts:62] [ACCEPTANCE] PASS input menu, 34 SIK note events, hold/cross/release guards, shared scoring and inactive-source guard",
+        "I 15:19:31.157 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 43.468s]PASSED: kalisenses-input-methods"
+      ]
+    },
+    {
+      "id": "kalisenses-guidance",
+      "status": "passed",
+      "evidence": [
+        "I 15:19:34.398 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:20:12.520 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 38.123s]PASSED: kalisenses-guidance"
+      ]
+    },
+    {
+      "id": "kalisenses-flows",
+      "status": "passed",
+      "evidence": [
+        "I 15:20:15.975 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:20:53.414 [Preview 1] [Assets/Scripts/KalisensesFlowScenario.ts:20] [ACCEPTANCE] PASS UI flows and accelerated three-song completion; enjoyment/real-time listening remains manual",
+        "I 15:20:53.414 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 37.439s]PASSED: kalisenses-flows"
+      ]
+    },
+    {
+      "id": "kalisenses-scoring-logic",
+      "status": "passed",
+      "evidence": [
+        "I 15:20:56.779 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:20:56.780 [Preview 1] [Assets/Scripts/KalisensesScoringScenario.ts:17] [ACCEPTANCE] PASS inclusive boundaries, nearest/tie, repeated pitch, simultaneous clock, rounding and all song sequences (logic only)",
+        "I 15:20:56.781 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.003s]PASSED: kalisenses-scoring-logic"
+      ]
+    },
+    {
+      "id": "kalisenses-placement",
+      "status": "passed",
+      "evidence": [
+        "I 15:21:30.341 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+        "I 15:22:03.224 [Preview 1] [Assets/Scripts/KalisensesPlacementScenario.ts:27] [ACCEPTANCE] PASS preview placement UI, surface-policy guards, shared anchor and world stability; real depth/patch detection UNTESTED",
+        "I 15:22:03.224 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 32.884s]PASSED: kalisenses-placement"
+      ]
+    },
+    {
+      "id": "kalisenses-reach",
+      "status": "inconclusive",
+      "evidence": [
+        "I 15:22:06.439 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}"
+      ]
+    }
+  ],
+  "cleanStartup": {
+    "status": "success",
+    "errors": [
+      "W 15:34:06.820 ${CONFIG_DIR}/Bundle/Plugins/[ChatTool] LEAF Plugin@5.23.0@362f6c78a8b5e47e6431049afb6a7109/dist/main.js:802 log] [LeafPlugin][LeafPlugin] Skipping plugin state save: instance was destroyed before its state finished loading."
+    ],
+    "prints": [
+      "I 15:34:07.491 [Preview 1] [Packages/SpectaclesInteractionKit.lspkg/Core/ConfigurationValidator/ConfigurationValidator.ts:16] SIK Version : 0.18.0",
+      "I 15:34:08.077 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.218s]Register scenario: kalisenses-physical-hold",
+      "I 15:34:08.077 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.218s]Register scenario: kalisenses-reach",
+      "I 15:34:08.078 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.218s]Register scenario: kalisenses-input-methods",
+      "I 15:34:08.078 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.219s]Register scenario: kalisenses-placement",
+      "I 15:34:08.078 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.219s]Register scenario: kalisenses-menu-layout",
+      "I 15:34:08.078 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.219s]Register scenario: kalisenses-b4-keyboard",
+      "I 15:34:08.079 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.219s]Register scenario: kalisenses-17-keyboard",
+      "I 15:34:08.079 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.220s]Register scenario: kalisenses-presentation",
+      "I 15:34:08.079 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.220s]Register scenario: kalisenses-guidance",
+      "I 15:34:08.079 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.220s]Register scenario: kalisenses-scoring-logic",
+      "I 15:34:08.079 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.220s]Register scenario: kalisenses-flows",
+      "I 15:34:09.200 [Preview 1] [Assets/Scripts/KalisensesMain.ts:63] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices"
+    ],
+    "logFile": "C:/Users/rg-za/AppData/Local/Snap/Lens Studio/logs/LensStudioLog-2026-11-05-10-19-39-538-7b861.txt"
+  },
+  "presentation": {
+    "status": "passed",
+    "time": "15:13:55.162",
+    "scope": "Instrument projection, readable label sizes, clear dock; before later release-only change and pad gap adjustment."
+  }
+}
