@@ -5,7 +5,7 @@ import {app,button,until} from "./KalisensesTestSupport";
 @component
 export class KalisensesKeyboardScenario extends Scenario {
   async run():Promise<void> {
-    const a=app();a.action("menu");await button("Free Play");
+    const a=app();a.action("input");a.action("input:physical");a.action("menu");await button("Free Play");
     const pose=a.cameraObject.getTransform().getWorldPosition();
     for(let i=0;i<NOTES.length;i++) {
       const n=a.plays;print("[ACCEPTANCE] KEY_READY "+LETTERS[i]);await until(()=>a.plays>n,10000);

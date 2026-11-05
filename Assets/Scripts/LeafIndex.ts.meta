@@ -29,6 +29,7 @@
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
     previewScenario: false
+    waitForDriver: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -39,8 +40,10 @@
     []
   DefaultScriptInputs:
     - previewScenario: ""
+      waitForDriver: true
   ScriptTypes:
     -
       {}
   InputLines:
     - '// @input string previewScenario {"hint":"Optional preview test to launch after reset. Leave empty for normal play."}'
+    - '// @input bool waitForDriver = true {"hint":"Wait for unmapped Q after reset before starting the opt-in test, so the external driver can attach first."}'
