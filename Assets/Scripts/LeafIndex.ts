@@ -12,6 +12,10 @@ import {KalisensesInputScenario} from "./KalisensesInputScenario";
 import {KalisensesPlacementScenario} from "./KalisensesPlacementScenario";
 import {KalisensesPhysicalHoldScenario} from "./KalisensesPhysicalHoldScenario";
 import {KalisensesReachScenario} from "./KalisensesReachScenario";
+import {KalisensesTutorialScenario} from "./KalisensesTutorialScenario";
+import {KalisensesTutorialFallbackScenario} from "./KalisensesTutorialFallbackScenario";
+import {KalisensesTutorialKeyboardScenario} from "./KalisensesTutorialKeyboardScenario";
+import {KalisensesNarrationLockScenario} from "./KalisensesNarrationLockScenario";
 @component
 export class LeafIndex extends BaseScriptComponent {
   @input @hint("Optional preview test to launch after reset. Leave empty for normal play.") previewScenario:string="";
@@ -30,6 +34,10 @@ export class LeafIndex extends BaseScriptComponent {
   }
   @scenariosIndex
   static scenariosIndex:ScenarioMetadata[]=[
+    {id:"kalisenses-narration-lock",typename:KalisensesNarrationLockScenario.getTypeName()},
+    {id:"kalisenses-tutorial",typename:KalisensesTutorialScenario.getTypeName()},
+    {id:"kalisenses-tutorial-fallback",typename:KalisensesTutorialFallbackScenario.getTypeName()},
+    {id:"kalisenses-tutorial-keyboard",typename:KalisensesTutorialKeyboardScenario.getTypeName()},
     {id:"kalisenses-physical-hold",typename:KalisensesPhysicalHoldScenario.getTypeName()},
     {id:"kalisenses-reach",typename:KalisensesReachScenario.getTypeName()},
     {id:"kalisenses-input-methods",typename:KalisensesInputScenario.getTypeName()},

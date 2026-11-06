@@ -1,0 +1,98 @@
+﻿[
+    {
+        "clip":  "action-physical.wav",
+        "seconds":  8.57,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "action-pinch.wav",
+        "seconds":  14.87,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "action-virtual.wav",
+        "seconds":  8.94,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "choose.wav",
+        "seconds":  6.53,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "complete.wav",
+        "seconds":  9.42,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "help-physical.wav",
+        "seconds":  10.83,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "help-pinch.wav",
+        "seconds":  14.81,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "help-virtual.wav",
+        "seconds":  13.31,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "intro.wav",
+        "seconds":  9.06,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "melody.wav",
+        "seconds":  10.63,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "offer.wav",
+        "seconds":  8.28,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "placement.wav",
+        "seconds":  12.05,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "release.wav",
+        "seconds":  8.92,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "sequence.wav",
+        "seconds":  8.55,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "timed.wav",
+        "seconds":  12.21,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    },
+    {
+        "clip":  "tracking.wav",
+        "seconds":  13.02,
+        "sampleRate":  22050,
+        "nonSilent":  true
+    }
+]

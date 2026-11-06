@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-06",
+  "logFile": "C:/Users/rg-za/AppData/Local/Snap/Lens Studio/logs/LensStudioLog-2026-11-05-19-45-14-470-39481.txt",
+  "scenario": "kalisenses-narration-lock",
+  "status": "passed",
+  "evidence": [
+    "I 17:03:09.917 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:09.921 [Preview 3] [Assets/Scripts/KalisensesNarrationLockScenario.ts:21] [LOCK_DRIVER] 1 HOLD",
+    "I 17:03:27.688 [Preview 3] [Assets/Scripts/KalisensesNarrationLockScenario.ts:24] [LOCK_DRIVER] 2 RELEASE",
+    "I 17:03:28.107 [Preview 3] [Assets/Scripts/KalisensesNarrationLockScenario.ts:25] [LOCK_DRIVER] 3 PRESS",
+    "I 17:03:28.434 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:28.461 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:28.554 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:29.233 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:38] [Tutorial audio] Playback failed: Error: injected playback failure",
+    "I 17:03:29.233 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:30.095 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:49] [Tutorial audio] Playback did not start",
+    "I 17:03:30.095 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] intro",
+    "I 17:03:32.282 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:50] [Tutorial audio] Playback watchdog released controls",
+    "I 17:03:32.291 [Preview 3] [Assets/Scripts/KalisensesNarrationLockScenario.ts:50] [LOCK_DRIVER] 4 TUTORIAL",
+    "I 17:03:32.537 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] release",
+    "I 17:03:41.050 [Preview 3] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-physical",
+    "I 17:03:41.052 [Preview 3] [Assets/Scripts/KalisensesNarrationLockScenario.ts:54] [ACCEPTANCE] PASS narration blocks all input paths/actions, drops held keyboard input, resumes after natural finish/stop/pause, and recovers from injected playback failure/start failure/stall",
+    "I 17:03:41.052 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 31.167s]PASSED: kalisenses-narration-lock",
+    "I 17:03:41.052 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 31.167s][kalisenses-narration-lock] PASSED"
+  ],
+  "sharedInputRegression": [
+    "I 17:04:41.665 [Preview 3] [Assets/Scripts/KalisensesInputScenario.ts:62] [ACCEPTANCE] PASS input menu, 34 SIK note events, hold/cross/release guards, shared scoring and inactive-source guard",
+    "I 17:04:41.665 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 20.832s]PASSED: kalisenses-input-methods",
+    "I 17:04:41.665 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 20.832s][kalisenses-input-methods] PASSED"
+  ],
+  "scope": "Preview-delivered keyboard events, application guards and disabled interactables; injected audio-failure doubles. No Specs hardware validation."
+}

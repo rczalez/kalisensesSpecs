@@ -1,44 +1,72 @@
 ---
-status: approved
+status: laptop-prototype-updated-validation-pending
+last_updated: 2026-11-06
 ---
 
-# Design brief: Kalisenses (default name)
+# Design brief: Kalisenses
+
+## Current scope
+
+This brief describes the current laptop implementation and the intended Specs experience. It incorporates Phase One's spatial and visual refinement, Phase Two's guided tutorial and fallback behavior, and the revised pinch demonstration. Implemented features, preview checks, and hardware-dependent claims are distinguished below; this document does not declare final Phase Two or Specs acceptance.
 
 ## The one spatial moment
-A beginner plays a recognizable virtual 17-key C-major kalimba without owning a physical instrument. In the laptop preview, the kalimba sits on a virtual tabletop, with readable keyboard labels, responsive notes and highlights, gentle fireflies, and an optional guided melody.
 
-## Why it belongs on glasses
-- Uses: draws in the world; the instrument occupies a tabletop at a meaningful physical scale.
-- Intended glasses experience: play a stable, desk-anchored instrument with left and right index fingers, including simultaneous notes, without owning a kalimba.
-- The laptop prototype proves musical interaction, presentation, and learning logic. The benefit of direct two-hand playing over a laptop remains to be validated on glasses; keyboard play is the deliberate demo input.
+A beginner plays a recognizable virtual 17-key C-major kalimba without owning a physical instrument. The instrument belongs on a tabletop, with supporting controls nearby, readable note labels, responsive sound and highlights, gentle fireflies, and optional guided practice.
 
-## Product or overlay
-- Type: product; the virtual instrument is the experience.
-- What the real version would sense: a tabletop for placement and both index fingertips for playing.
-- Stand-in for the preview: an obvious virtual tabletop with the instrument already placed, and the computer keyboard instead of tracked fingers. No real surface recognition is required for this prototype.
-- Target platform: Snap SPECS, using the existing Lens Studio project targeting `Spectacles`. Meta interaction guidance and Google Glass principles inform design; implementation uses Snap APIs.
+The intended glasses experience uses the user's surroundings and leaves the playing area clear. The laptop prototype retains a virtual tabletop and physical keyboard input. Real placement, hand tracking, sustained comfort and the benefit of playing on glasses still need device validation.
 
-## Where things live
-- Main view: simulated seated player looking down toward the tabletop.
-- Kalimba: approximately 35 cm wide and 25 cm deep, centered on the virtual tabletop in front of the player. Keep its world position stable when the preview camera moves.
-- Camera: angled to show all 17 keys and their keyboard labels. Initial eye position approximately 65 cm above and 60 cm back from the instrument center, aimed at the center (default; adjust after visual inspection for readability).
-- Tabletop: approximately 70 cm wide by 50 cm deep, 72 cm above the floor (default).
-- Keyboard labels and note names: on or immediately beside their corresponding tines; readable from the initial seated view. Use light text and adequate contrast for an additive display.
-- Menu, song cue, tempo controls, and results: just beyond the upper edge of the instrument, inside the same comfortable view (default). Avoid covering keys or their labels.
-- Fireflies: gentle motion beside and above the instrument, outside the key and label area. Cap the population and fade old particles (default).
+## Platform and spatial design
 
-## Hands and input
-- Laptop playing: use the exact physical key mapping below in both Free Play and Follow Along. Treat letters the same regardless of capitalization.
-- Each released-to-pressed transition triggers one note and highlights its corresponding tine. Support simultaneous keys and overlapping audio voices. A held key must not retrigger until released and pressed again.
-- Clear held-key state on mode changes, song restarts, and input focus loss where supported (default); verify focus behavior in preview.
-- Menus: use large, labeled SIK/UIKit controls operable with the preview mouse. Musical acceptance checks use keyboard input. On-device index-finger menu interaction is a future validation item.
-- Targets are big and highlight when aimed at. Use Meta's index-first and forgiving-target principles where compatible; do not force Meta menu spacing onto all 17 tines without checking reach and readability.
-- Voice: none.
-- Preview keyboard API: local `Support/StudioLib.d.ts` exposes `KeyboardManager.isKeyPressed`. Verify actual input delivery, polyphony, and release behavior during the build.
-- Several music keys overlap preview navigation shortcuts. Establish and document a focused playing configuration that prevents camera movement while performing; do not alter the requested note mapping. Treat unresolved shortcut conflicts as a failed keyboard acceptance check.
+- Target: Snap SPECS, using the existing Lens Studio project targeting `Spectacles`. Implementation uses Snap APIs, Spectacles Interaction Kit (SIK) and Spectacles UIKit.
+- The instrument is approximately 35 cm wide and 25 cm deep, with recognizable alternating tine lengths.
+- Instrument and control dock share a world anchor. The dock sits behind the instrument, beyond the playing area, rather than following the user's face.
+- The editor-only virtual tabletop is approximately 70 cm wide by 76 cm deep, providing room for the rear dock and front note pads. It is a preview stand-in, not a detected physical table.
+- The laptop camera looks downward at approximately 43 degrees, with the instrument about 65 cm below and 60 cm in front of the starting eye position. All 17 tines and their labels should remain visible.
+- An editor-only camera lock is implemented. Lens Studio's separate Interactive Preview navigation still responds to WASD and arrow keys; disabling only WASD has not been implemented. Preview-injected keyboard checks do not resolve the physical-key/background-navigation conflict.
+- On Specs, surface placement uses supported environmental sensing, checks for a stable, nearly horizontal surface and additional footprint samples, then requires explicit confirmation. The instrument and dock stay together after placement.
+- The placement flow includes Find Surface, Confirm Placement, retry and status messages. The laptop explains that its virtual tabletop is already ready.
+- Real surface sensing, footprint suitability, anchoring drift and placement comfort are implemented device-validation tasks, not established hardware results.
+- Fireflies remain beside the instrument, outside the key and label area, with a population cap and fading lifetime. Guidance and effects must not obscure notes.
+
+## Visual style and readability
+
+Use a clean, colorful style with Outfit, the project's geometric sans-serif font, medium/bold lettering, clear labels and comfortable spacing. Keep keyboard letters and note names on or beside the corresponding tines. Use compact menus and hide inactive views.
+
+| Color | Role |
+| --- | --- |
+| #FF9C00 | Primary actions, active states, next-note cues and important highlights |
+| #CC8D29 | Secondary accents and hover feedback |
+| #99763D | Supporting details and decorative accents |
+| #66563D | Supporting surfaces |
+| #332F29 | Deepest backing surfaces and text outlines |
+| #FFF4DF | Bright neutral text and idle tines |
+
+Played notes retain the existing green confirmation highlight. Follow Along also uses words or symbols to distinguish correct, incorrect and missed notes; color alone is not sufficient.
+
+Dark backing panels use a high-opacity setting with transparency where practical, plus bright lettering and outlines. On an additive display, dark surfaces do not provide reliable optical occlusion. Preview readability is not proof of adequate contrast on Specs; assess text, outlines, controls and effects in bright and busy real surroundings.
+
+## Input methods and note behavior
+
+Free Play and Follow Along remain the two gameplay modes. A separate Input Method setting offers:
+
+| Method | Playing action |
+| --- | --- |
+| Physical Keyboard | Laptop default. Press the mapped key, then release before replaying it. |
+| Virtual Keyboard | Seventeen labeled in-world pads in front of the instrument. Poke with an index finger on device; click a pad in the editor. Lift before playing again. |
+| Pinch Gesture | Aim the SIK hand ray at a tine and use hover feedback to identify the target. Bring thumb and index together once, then open them before another note. |
+
+All methods share the same note-playing path for audio, tine highlights, fireflies and scoring. A held contact cannot repeat notes by crossing targets or changing views. Release and repress/lift/unpinch rearm it. Release away from a target is handled where supported; tracking loss and focus-loss behavior still need manual checks.
+
+Menus use labeled SIK/UIKit controls. Physical keyboard input is a separate supported laptop path and must remain usable. Simultaneous-key software handling and overlapping audio voices are implemented; physical keyboard rollover and real two-hand performance remain validation tasks.
+
+Narration provides audio guidance. There is no voice-command or speech-recognition input.
+
+### Established physical keyboard mapping
+
+The current working mapping remains unchanged:
 
 | Keyboard key | Note |
-|---|---|
+| --- | --- |
 | B | C4 |
 | V | D4 |
 | C | F4 |
@@ -57,88 +85,140 @@ A beginner plays a recognizable virtual 17-key C-major kalimba without owning a 
 | U | C6 |
 | I | E6 |
 
-### Instrument and sound
-- Use all 17 diatonic notes from C4 through E6, tuned to C major, with recognizable alternating kalimba tine lengths and a beginner-friendly appearance.
-- Intended standard layout, left to right from the player's view: D6, B5, G5, E5, C5, A4, F4, D4, C4, E4, G4, B4, D5, F5, A5, C6, E6. Verify the conventional layout before building.
-- Keyboard labels in that same spatial order: R, A, S, D, F, X, C, V, B, N, M, L, H, J, K, U, I. L replaces comma by explicit approval.
-- Use responsive kalimba-like plucked audio, accurately pitched to each note, with overlapping decays for chords. Source or synthesize sounds with documented rights (default). Do not substitute a single monophonic player that cuts off other notes.
+The requested change from L to comma for B4 has **not** been applied. This Lens Studio version's keyboard API and MCP injector do not support comma; the injector rejected it as an unknown key. Do not label comma as working. No external keyboard-remapping tool has been configured.
 
-## When things show
-- Start: show a simple menu with exactly two main options, **Free Play** and **Follow Along**, plus a brief instruction explaining the keyboard labels (default).
-- Free Play: show the instrument and a small return-to-menu control. Every played note produces audio, a clear tine highlight, and gentle fireflies. No prescribed song or score.
-- Follow Along selection: show Amazing Grace, Silent Night, and Scarborough Fair, plus practice tempo controls and a return action (default).
-- Use public-domain melodies and create original simple arrangements within C4–E6. Verify the chosen melody sources and record attribution; do not copy a copyrighted modern arrangement or recording. Keep song excerpts short and complete enough to recognize (default; choose lengths during build).
-- Practice tempo: 40–80 BPM, starting at 60 BPM. Choose the tempo before starting; lock it during a performance (default) so timing and score remain predictable.
-- Before each performance: four-beat count-in at the selected tempo. Show a visible beat pulse and count, with a gentle audio click (default). Do not score count-in input (default).
-- During the song: mostly one note per beat. Highlight the next tine and show its note name, associated keyboard key, and an approaching timing cue.
-- Feedback: distinguish correct, incorrect, and missed notes using color plus a brief word or symbol (default), so color alone is not required. Keep labels readable. Correct = green/check; incorrect = amber/cross; missed = muted violet/dash (default).
-- Restart and Return to Menu remain available during Follow Along. Stop scheduled notes, sounds, and scoring when leaving or restarting (default).
-- Completion: wait until the final target window closes, then show percentage score, correct notes, incorrect presses, missed notes, and encouraging feedback. Celebrate with a gentle firefly effect.
-- Completion actions: Replay, Choose Another Song, and Free Play. Retries carry no penalties or previous score state.
-- Hide inactive menus and finished feedback. No important task is intentionally placed out of view, so no directional arrow is required (default).
+Tines from left to right: D6, B5, G5, E5, C5, A4, F4, D4, C4, E4, G4, B4, D5, F5, A5, C6, E6. Corresponding labels: R, A, S, D, F, X, C, V, B, N, M, L, H, J, K, U, I.
 
-### Timing and scoring
-- Correct note: matching key pressed within an inclusive ±400 ms of a target time; award 100 points.
-- Incorrect press: a mapped note-key press that does not match any eligible unjudged target; award 0 points, record one incorrect press, and deduct nothing. A correct pitch outside its window is also unmatched (default).
-- Missed note: no matching press by the time its window closes; award 0 points and record one miss. An incorrect press does not consume the target (default).
-- Each target is judged once. Each press can satisfy at most one target. Ignore held-key automatic repeats.
-- Overlap rule: select the nearest unjudged target of the same pitch whose window contains the press. Earlier targets win exact ties. This rule was accepted by the learner.
-- Process simultaneous presses independently using the same clock. Resolve valid presses at a closing boundary before marking the target missed (default).
-- Score = points earned / (100 × number of targets) × 100. Display rounded to the nearest whole percent (default), retaining exact totals internally.
-- Show correct notes, incorrect presses, and missed notes separately. At completion, correct + missed must equal the target count. Extra incorrect presses do not lower earned points.
-- Non-note keys are ignored for musical scoring (default). Input outside the active scoring period is not counted (default).
-- At 60 BPM, targets one beat apart are 1,000 ms apart, leaving 200 ms between ±400 ms windows. At 80 BPM, 750 ms spacing makes adjacent windows overlap by 50 ms; use the rule above.
-- These are initial prototype settings: slow, welcoming practice with challenge and a sense of progress.
+Use the existing pitched, polyphonic kalimba-like plucks and overlapping decays. Preserve the note audio, original songs, scoring rules and firefly behavior when extending the tutorial.
 
-## Done criteria
-Each one can be checked in Lens Studio's preview. Musical checks must use keyboard input.
-1. **Keyboard accuracy and responsiveness:** all 17 mappings play the correct notes and highlight the corresponding tines. Simultaneous presses work; held keys do not repeat. Release and repress works, capitalization does not change mapping, and playing does not move the camera.
-2. **Clear presentation:** the entire 35 × 25 cm instrument is visible on its virtual tabletop from the seated view. All keyboard labels are readable. Song cues clearly identify which key to press and when. Moving the preview camera leaves the instrument fixed in the world.
-3. **Beginner-friendly guidance:** each song begins with a four-beat count-in, defaults to 60 BPM, and can be restarted at a chosen tempo from 40–80 BPM. Simple arrangements and visible cues let a beginner follow the sequence.
-4. **Reliable scoring:** correct, incorrect, and missed events follow the inclusive ±400 ms rule. Each target scores once; overlap matching uses nearest same-pitch target and earlier tie-break. Check boundary cases, repeated pitches, simultaneous input, and the final percentage against known input sequences. Results show all three counts separately.
-5. **Enjoyable experience:** Free Play gives responsive audio and fireflies without obscuring keys. Each of the three songs completes with encouraging results and a firefly celebration. Replay, Choose Another Song, Free Play, Restart, and Return to Menu work and reset state appropriately.
+## Menus and gameplay
 
-## Out of scope
-- This laptop prototype does not require real tabletop recognition, physical surface anchoring, or tracked two-index-finger input.
-- No claims of validated on-device hand tracking, touch comfort, or audio latency.
-- No multiplayer, persistent scores, voice input, camera recognition, or recording of surroundings.
+- Main menu: Free Play, Follow Along, Input Method, Placement and Learn to Play. On device, placement confirmation is required before playing.
+- Free Play: every accepted note makes its sound, highlights its tine and produces gentle fireflies. There is no prescribed song or score.
+- Follow Along selection: Amazing Grace, Silent Night and Scarborough Fair, with tempo controls and a return action.
+- Tempo: 40–80 BPM, initially 60 BPM. Select it before a performance; keep it fixed while playing.
+- Before a scored performance: four-beat count-in with visible guidance and the existing audio click. Count-in input does not score.
+- During a song: highlight the next tine and show its note, keyboard label and approaching timing cue. Distinguish correct, incorrect and missed feedback.
+- Restart and Return to Menu stop the current performance and reset its state.
+- Completion: after the final target window closes, show percentage, correct notes, incorrect presses and missed notes, with encouraging feedback and a firefly celebration.
+- Results actions: Replay, Choose Another Song and Free Play. A retry starts with fresh score state.
+- Use original beginner arrangements of public-domain melodies; retain the project's audio/source documentation and review rights before distribution.
 
-## Risks and open questions
-- Physical desk anchoring, stability on hardware, two-hand simultaneous playing, fingertip rearming after contact, and index-finger menu accessibility remain future device work: **feel unproven**.
-- The 35 cm prototype is wider than many physical kalimbas to prioritize keyboard label readability. Whether 17 direct-touch targets can be comfortable at this size needs hardware testing.
-- Preview focus/navigation conflicts and keyboard hardware rollover can limit actual chord input. Verify and document the supported setup; automated musical logic tests alone cannot prove physical keyboard delivery.
-- Polyphonic timing logic can be tested, but perceived audio responsiveness and pitch accuracy also need listening checks.
-- Melody source rights and the exact original beginner arrangements must be checked during implementation.
-- Guidance references: Meta touch best practices, https://developers.meta.com/vr/design/touch_bp/ ; Google Glass principles, https://developers.google.com/glass/design/principles .
-- The template's SIK/UIKit instruction below applies to menus and controls. The learner explicitly requires computer keyboard input for playing, so implement that input path alongside the controls. Do not replace musical keyboard acceptance tests with simulated pinches.
-- Where LEAF cannot inject actual keyboard input, report that limitation and perform manual keyboard checks; shared-handler tests can verify scoring logic but must be labeled separately from keyboard delivery tests.
+### Follow Along timing and scoring
 
-## Build notes for CLAD
-- Build for SPECS so it runs and can be demonstrated in Lens Studio's preview. No SPECS device is available.
-- Use Spectacles Interaction Kit (SIK) and UI Kit for all interactions, so they work with the mouse in Interactive Preview and with LEAF.
-- Build any stand-in exactly as described above, and keep it obvious in the scene.
-- Use real-world scale in centimeters. Keep content inside the user's view during the main task.
-- The display is additive: black renders as transparent. Don't rely on black or very dark content to be seen; keep text light and readable from where the user stands.
-- Get the basic flow working first, then add detail.
-- Write LEAF scenarios for each done criterion, run them in preview, and report which pass. Say which criteria have no test.
-- Don't record, identify, or follow people.
+These rules apply to the existing scored mode, not the tutorial:
 
-## After the build: judge it
-This part is for you, after CLAD finishes.
+- A matching press within an inclusive ±400 ms target window earns 100 points.
+- Each target is judged once and each press satisfies at most one target. Held-key automatic repeats are ignored.
+- Match the nearest eligible unjudged target of the same pitch; earlier targets win exact ties.
+- An unmatched mapped-note press records one incorrect press and earns no points, but deducts nothing and does not consume a target.
+- A target not matched before its window closes records one miss.
+- Process simultaneous presses independently using the same clock. Resolve valid boundary presses before expiring targets.
+- Percentage is earned points divided by the maximum target points, rounded to a whole percent for display. At completion, correct plus missed equals the target count; extra incorrect presses do not reduce earned points.
+- Non-note keys and input outside the active scoring period do not score.
 
-1. **Does it work?** Ask your agent which LEAF tests passed and which done criteria have no test.
-2. **Walk around it.** Open the preview in Interactive Preview. Use WASD to move, Q and E to go down and up, and right-drag (or hold Shift) to look around. Clicking acts as a pinch. Stand where a user would and look at the task.
-3. **Ask the three questions.**
-   - Does it use what I'm looking at?
-   - Does it put something in my space, where it belongs?
-   - Does it free my hands or let me keep my eyes up?
-   - Would it be just as good on a phone? If so, what would make it need the glasses?
-4. **Check comfort.**
-   - Everything I need is in view while I do the task. Nothing sits at the edges, behind me, or stuck to my face.
-   - Every control is within reach of someone standing there.
-   - Text reads easily from where I stand. No dark UI disappearing.
-   - Things show when needed and get out of the way.
-5. **Label what you know.** Write "logic proven" next to anything the tests and preview show working, and "feel unproven" next to anything only real glasses could tell you (comfort over time, real hand tracking, real recognition).
-6. **Fix with design notes, not code.** Tell your agent what to change in design terms, for example: "Move the step card 15 cm lower and next to the pan. Make the Next button twice as big. Re-run the tests." If a fix takes under a minute, like nudging a panel, do it yourself in the scene.
-7. **Submit.** Record a video under 3 minutes of your Lens in the preview, public on YouTube. Make your repo public with your Lens Studio project and this `devpost/` folder. Details are on the hackathon site: https://learn-specs.devpost.com/resources
+## Guided tutorial and fallback interactions
+
+Learn to Play opens a progressive tutorial with short captions, offline audio narration, visual demonstrations and unlimited retries. It can be completed using laptop keyboard events, including navigation. It does not introduce score penalties.
+
+### Learning progression
+
+1. Introduce the instrument, amber guidance and the absence of tutorial scoring.
+2. Explain placement and walk through the placement view.
+3. Choose an input method; allow changes later without restarting.
+4. Demonstrate the selected action. For pinch, teach aiming before thumb/index contact, then opening to release.
+5. Highlight C4 and wait for the correct note. Wrong notes may sound, but do not advance the target.
+6. Teach release explicitly. Holding one contact makes only one note.
+7. After success, invite the other hand. Pinch practice asks for the right hand first, then the left; keyboard/pad practice does not enforce hand identity.
+8. Practice C4–D4–E4–C4, waiting for each correct note and release.
+9. Play a simple 42-note C-major arrangement of Twinkle, Twinkle, Little Star in untimed mode.
+10. Offer optional pulse practice, or let the user skip to Free Play.
+
+Pulse practice uses the selected beginner tempo, four lead-in beats, the existing click and a 400 ms early tolerance. Early notes can be retried and late notes remain available indefinitely. There are no missed-note or incorrect-note penalties. This forgiving tutorial mode is separate from scored Follow Along.
+
+### Narration and recovery controls
+
+- Between narration clips, Replay restarts the current instruction and the gesture demonstration from its open pose.
+- Mute/Unmute can be selected between clips and affects subsequent narration; captions remain available.
+- Help repeats guidance and enlarges the pinch demonstration when controls are available.
+- Input opens the existing input choices without resetting the current step or melody position.
+- Skip opens Free Play, subject to required device placement. Exit returns to the main menu.
+- Quiet-time reminders repeat guidance with a cooldown. Recent key attempts, changing hover targets and held pinch attempts suppress automatic prompts.
+- Missing or unstable hand tracking produces a brief explanation and offers another input, once per input selection. The policy is implemented and tested with injected sensor states; real tracking reliability remains unverified.
+- If tracking is lost while waiting for release, changing to another input preserves the earned note and allows tutorial progression. The old held source still needs its own release before it can play again.
+- Virtual Keyboard still needs tracked hands on Specs. Physical Keyboard is the laptop fallback; usable fallback options on the intended device setup require validation.
+- Sixteen local prototype narration clips are included. No runtime network speech service is required. Perceived clarity, pronunciation and audio mixing still need listening review.
+
+### Interaction lock during narration
+
+While a TutorialNarration clip plays, disable all Lens input: physical note/navigation keys, virtual note pads, pinch/poke actions and menu controls, including Replay, Mute, Help, Input, Skip and Exit. Keep the captions and demonstration visible, with a Listening message explaining that controls return afterward.
+
+Discard inputs received during playback. Do not buffer notes or menu actions. A key, touch or pinch held through the end must be released before a fresh activation is accepted. Release bookkeeping continues so held inputs cannot replay automatically. Pause tutorial progression and practice timing during narration.
+
+Restore controls on natural completion or interruption. Failed starts, thrown playback errors, pauses and stalled playback must also release the lock. A failed delayed start is stopped before unlocking to prevent it beginning later with controls active. Muted or missing clips do not leave input locked. These are Lens controls; Lens Studio's separate built-in preview-navigation shortcuts are outside the runtime lock.
+
+### Revised pinch demonstration
+
+The instructional animation now uses a connected palm, wrist, thumb web and curled supporting fingers. Thumb and index bend at joints with constant segment lengths, easing through open, pinch/contact, hold and release. It is larger than the initial schematic, mirrors for the other hand, and updates its phase caption.
+
+In laptop preview it is explicitly labeled as a simulated hand. The animation generates no note or tracking events and is not evidence of pinch-recognition accuracy.
+
+### Laptop tutorial controls
+
+These controls do not replace any musical key:
+
+| Key | Action |
+| --- | --- |
+| Space | Open tutorial from main menu; Next; confirm placement; return from Input |
+| 0 | Replay |
+| 1 | Mute/unmute narration |
+| 2 | Cycle Physical Keyboard, Virtual Keyboard and Pinch Gesture |
+| 3 | Skip |
+| 4 | Exit |
+| 5 | Help |
+| 6 | Find Surface while the placement view is open |
+
+## Verification status and acceptance criteria
+
+[Phase One verification](../Assets/Verification/PhaseOneVerification.md) records ten passing laptop checks and one inconclusive reach simulation. [Phase Two verification notes](../Assets/Verification/PhaseTwoVerification.md) describe the tutorial implementation and test scope; those notes remain a draft pending final evidence/report consolidation.
+
+| Area | Confirmed findings | Remaining acceptance work |
+| --- | --- | --- |
+| Keyboard | All 17 mappings, injected hold/repress and overlapping keys passed earlier preview checks. The untimed tutorial passed 55 preview-delivered keyboard prompts. | Physical focus loss, capitalization/modifiers, rollover and native preview-navigation conflicts. |
+| Layout and style | Tabletop layout, labels, menus, input pads and guidance were inspected in preview. | Readability and comfort on an additive Specs display. |
+| Gameplay | Shared note events, scoring boundaries, Free Play and accelerated completion/replay of the three existing songs passed checks. | Real-time listening/playthroughs and perceived audio latency. |
+| Tutorial | LEAF runs passed progression, replay/mute, retries/release, input switching, untimed melody, accelerated timed practice, completion, skip and exit. | Final verification/report consolidation after the latest visual changes. |
+| Recovery | Injected-state checks passed prompt suppression, hand order, tracking fallback and progress retention. | Actual tracking loss/recovery, two-hand behavior and fallback availability on Specs. |
+| Revised pinch animation | Compilation and visual playback passed; open and contact poses were inspected. | The latest native MCP pinch attempt on Tine-C4 timed out waiting for onTriggerStart after 5 seconds. Live interaction verification remains incomplete. |
+| Surface placement | Editor behavior, surface suitability rules and the shared world anchor were checked. | Real surface sensing, permissions, footprint checks and anchor stability on hardware. |
+
+The timeout is a confirmed preview-agent interaction failure. Its cause has not been established; it is not proof that the animation or on-device pinch recognition is defective. Earlier simulated SIK passes do not override this unresolved result.
+
+Useful evidence:
+
+- [Phase One instrument/menu](../Assets/Verification/phase-one-main.png)
+- [Phase One input options](../Assets/Verification/phase-one-input.png)
+- [Revised open-hand demonstration](../Assets/Verification/phase-two-pinch-open.png)
+- [Revised pinch-contact demonstration](../Assets/Verification/phase-two-pinch-contact.png)
+- [Narration asset checks](../Assets/Verification/phase-two-narration-checks.json)
+- [Earlier AiPreviewAgent recovery report](../Assets/Verification/AiPreviewAgentRecovery.md)
+
+## Build and review discipline
+
+Use CLAD, Lens Studio MCP and LEAF where supported. Build incrementally, inspect the live preview after meaningful changes, and preserve the physical keyboard path. Use SIK/UIKit for world controls while keeping keyboard input available for laptop music and tutorial navigation.
+
+Separate direct preview-delivered input, simulated interactor tests, pure logic checks, visual inspection and real hardware evidence. Do not infer hand comfort, reliable recognition or physical keyboard delivery from logic tests alone.
+
+Assess the instrument from the initial playing view and nearby viewpoints. Arrow keys are available for Interactive Preview navigation, but WASD also remains active; do not claim an arrow-only remap or an interaction lock that has not been verified. Keep controls, cues and effects away from the playing area.
+
+Meta's [Unity First Hand sample](https://github.com/oculus-samples/Unity-FirstHand) informs progressive interaction teaching and alternative-input support. The tutorial adapts those ideas to Specs; it does not import Unity APIs or Meta assets. The existing [Google Glass design principles](https://developers.google.com/glass/design/principles) remain a spatial-design reference.
+
+## Out of scope and open risks
+
+- No claim of validated Specs hand tracking, real tabletop recognition, reach, long-term comfort or audio latency.
+- No multiplayer, persistent scores, voice-command input, camera recognition, or recording/identifying/following people.
+- The 35 cm instrument favors readable labels; comfortable access to all 17 targets needs hardware testing.
+- Keep dark backing transparency and hand-demo legibility under review in real environments.
+- Resolve the latest preview pinch timeout before declaring live interaction verification complete.
+- Restore/verify normal startup with the optional LEAF previewScenario empty after any testing session. Keep temporary test runs separate from the user's experience.
 
