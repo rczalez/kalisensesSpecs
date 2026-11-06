@@ -3,7 +3,11 @@ import {KalisensesInstrument} from "./KalisensesInstrument";
 import {NOTES,LETTERS,SONGS,PerformanceScore,keyboardCodes,Song} from "./KalisensesMusic";
 import {InputMethod,INPUT_NAMES,NoteContacts} from "./KalisensesInput";
 import {KalisensesPlacement} from "./KalisensesPlacement";
-import {Interactor} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Interactor";
+import {Interactor,InteractorInputType} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Interactor";
+import {InteractionManager} from "SpectaclesInteractionKit.lspkg/Core/InteractionManager/InteractionManager";
+import {HandInputData} from "SpectaclesInteractionKit.lspkg/Providers/HandInputData/HandInputData";
+import {KalisensesTutorial} from "./KalisensesTutorial";
+import {KalisensesNarration} from "./KalisensesNarration";
 const TRACKS:AudioTrackAsset[]=[
   requireAsset("../GeneratedSFX/D6.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/B5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/G5.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/E5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/C5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/A4.wav") as AudioTrackAsset,
@@ -11,7 +15,7 @@ const TRACKS:AudioTrackAsset[]=[
   requireAsset("../GeneratedSFX/E4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/G4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/B4.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/D5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/F5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/A5.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/C6.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/E6.wav") as AudioTrackAsset];
-type Mode="menu"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"results";
+type Mode="menu"|"tutorial"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"results";
 @component
 export class KalisensesMain extends BaseScriptComponent {
   @input @hint("World-space UIKit views") ui!:KalisensesPanelUI;
@@ -24,19 +28,25 @@ export class KalisensesMain extends BaseScriptComponent {
   public plays=0;public lastNote="";public lastIndex=-1;public lastAudio:AudioComponent|null=null;
   public countInPulses=0;public startMs=0;public ready=false;
   public inputMethod:InputMethod="physical";
+  public tutorial!:KalisensesTutorial;public narration!:KalisensesNarration;
+  private tutorialHands:()=>{tracked:boolean;attempting:boolean}=()=>({tracked:false,attempting:false});
+  private navigationHeld=new Set<Keys>();private tutorialBeat=-1;
+  private narrationLocked=false;private narrationBeganAt=0;
+  private suppressedPointers=new Set<Interactor>();
+  public get interactionsBlocked():boolean {if(this.narration)this.narration.update();return this.narrationLocked;}
   private contacts=new NoteContacts();
   private previewTracking:DeviceTracking|null=null;
   private watchedPointers=new Set<Interactor>();
   private releaseSubscriptions:(()=>void)[]=[];
   private codes:Keys[]=[];private held:boolean[]=new Array(17).fill(false);private voices:AudioComponent[]=[];private voice=0;private click!:AudioComponent;
-  private queued:{index:number;time:number}[]=[];private lastBeat=-1;private feedback="";private feedbackUntil=0;private feedbackColor=new vec4(.9,1,1,1);
+  private queued:{index:number;time:number;source:InputMethod;contact:string}[]=[];private lastBeat=-1;private feedback="";private feedbackUntil=0;private feedbackColor=new vec4(.9,1,1,1);
   private seatedPosition=new vec3(0,0,0);private seatedRotation=quat.fromEulerAngles(-43*Math.PI/180,0,0);
   onAwake() {
     this.createEvent("OnStartEvent").bind(()=>this.initialize());
     this.createEvent("UpdateEvent").bind(()=>{if(this.ready)this.update();});
     this.createEvent("LateUpdateEvent").bind(()=>{if(this.ready&&this.lockPreviewCamera&&global.deviceInfoSystem.isEditor())this.seatCamera();});
     this.createEvent("OnDisableEvent").bind(()=>this.stop());
-    this.createEvent("OnDestroyEvent").bind(()=>this.releaseSubscriptions.forEach(unsubscribe=>unsubscribe()));
+    this.createEvent("OnDestroyEvent").bind(()=>{this.stop();this.releaseSubscriptions.forEach(unsubscribe=>unsubscribe());});
   }
   private initialize() {
     if(global.deviceInfoSystem.isEditor()) {
@@ -50,26 +60,75 @@ export class KalisensesMain extends BaseScriptComponent {
     for(let i=0;i<32;i++) {const a=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;a.playbackMode=Audio.PlaybackMode.LowLatency;a.volume=this.volume;this.voices.push(a);}
     this.click=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;this.click.audioTrack=requireAsset("../GeneratedSFX/CountClick.wav") as AudioTrackAsset;this.click.volume=.15;this.click.playbackMode=Audio.PlaybackMode.LowLatency;
     this.ui.onAction.add(action=>this.action(action));
-    this.ui.onNoteDown.add(e=>{this.watchRelease(e.interactor);this.noteDown("virtual",e.index,e.contact);});
+    this.ui.canInteract=pointer=>!this.interactionsBlocked&&!this.suppressedPointers.has(pointer);
+    this.ui.onNoteDown.add(e=>{this.watchRelease(e.interactor);if(e.interactor&&this.suppressedPointers.has(e.interactor)){this.contacts.down("virtual",e.contact);return;}this.noteDown("virtual",e.index,e.contact);});
     this.ui.onNoteUp.add(contact=>this.noteUp("virtual",contact));
-    this.instrument.onNoteDown.add(e=>{this.watchRelease(e.interactor);this.noteDown("pinch",e.index,e.contact);});
+    this.instrument.onNoteDown.add(e=>{this.watchRelease(e.interactor);if(e.interactor&&this.suppressedPointers.has(e.interactor)){this.contacts.down("pinch",e.contact);return;}this.noteDown("pinch",e.index,e.contact);});
     this.instrument.onNoteUp.add(contact=>this.noteUp("pinch",contact));
     this.ui.setInputMethod(this.inputMethod);
+    this.ui.initializeTutorialDemo(this.instrument.sphere,this.instrument.surface);
+    this.narration=new KalisensesNarration(this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent,locked=>this.setNarrationLocked(locked));
+    this.tutorial=new KalisensesTutorial({method:()=>this.inputMethod,placed:()=>this.placement.placed,editor:global.deviceInfoSystem.isEditor(),bpm:()=>this.bpm,
+      draw:v=>this.ui.setTutorial(v),say:id=>this.narration.play(id),silence:()=>this.narration.stop(),mute:value=>this.narration.setMuted(value),
+      exit:skipped=>{this.action(skipped?"free":"menu");}});
+    const hands=HandInputData.getInstance();const right=hands.getHand("right"),left=hands.getHand("left");
+    this.tutorialHands=()=>({tracked:this.inputMethod==="pinch"&&this.tutorial.step==="first"?right.isTracked():this.inputMethod==="pinch"&&this.tutorial.step==="other"?left.isTracked():right.isTracked()||left.isTracked(),attempting:right.isPinching()||left.isPinching()});
     this.placement.onStatus.add(status=>this.ui.setPlacementStatus(status));
-    this.createEvent("KeyPressEvent").bind(e=>{const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.noteDown("physical",i,String(i));}});
-    this.createEvent("KeyReleaseEvent").bind(e=>{const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=false;this.noteUp("physical",String(i));}});
+    this.createEvent("KeyPressEvent").bind(e=>{
+      if(this.interactionsBlocked){this.navigationHeld.add(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.contacts.down("physical",String(i));}return;}
+      if(this.tutorialKey(e.key))return;const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.noteDown("physical",i,String(i));}
+    });
+    this.createEvent("KeyReleaseEvent").bind(e=>{this.navigationHeld.delete(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=false;this.noteUp("physical",String(i));}});
     this.seatCamera();this.placement.initialize();this.ready=true;
     if(!this.placement.placed){this.mode="placement";this.ui.show("placement");}
     print("[Kalisenses] READY 17 keys, L=B4, two modes, 32 voices");
   }
   private seatCamera() {if(!global.deviceInfoSystem.isEditor())return;const t=this.cameraObject.getTransform();t.setWorldPosition(this.seatedPosition);t.setWorldRotation(this.seatedRotation);}
-  private stop() {this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});if(this.click)this.click.stop(false);this.queued=[];this.held=this.codes.map(k=>KeyboardManager.isKeyPressed(k));this.feedback="";}
+  private suppressHeldPointers() {
+    InteractionManager.getInstance().getInteractorsByType(InteractorInputType.All).forEach(pointer=>{
+      this.watchRelease(pointer);if(pointer.isTriggering)this.suppressedPointers.add(pointer);
+    });
+  }
+  private setNarrationLocked(locked:boolean) {
+    if(locked===this.narrationLocked)return;
+    this.suppressHeldPointers();this.narrationLocked=locked;this.queued=[];
+    if(locked){this.narrationBeganAt=getTime();this.instrument.setPinchEnabled(false);}
+    else if(this.tutorial)this.tutorial.resumeAfterNarration(Math.max(0,getTime()-this.narrationBeganAt),getTime());
+    this.ui.setInteractionLocked(locked);
+  }
+  private tutorialKey(key:Keys):boolean {
+    if(!global.deviceInfoSystem.isEditor())return false;
+    if(!this.tutorial.active){if(this.mode==="menu"&&key===Keys.Space){if(!this.navigationHeld.has(key)){this.navigationHeld.add(key);this.action("tutorial");}return true;}return false;}
+    const commands=new Map<Keys,string>([[Keys.Space,"next"],[Keys.Zero,"replay"],[Keys.One,"mute"],[Keys.Three,"skip"],[Keys.Four,"exit"],[Keys.Five,"help"]]);
+    if(!commands.has(key)&&key!==Keys.Two&&key!==Keys.Six)return false;
+    if(this.navigationHeld.has(key))return true;this.navigationHeld.add(key);
+    if(key===Keys.Two){const methods:InputMethod[]=["physical","virtual","pinch"];this.action("input:"+methods[(methods.indexOf(this.inputMethod)+1)%3]);return true;}
+    if(key===Keys.Six&&this.mode==="placement"){this.action("scan");return true;}
+    if(key===Keys.Space&&this.mode==="placement"){this.action("confirm");return true;}
+    if(key===Keys.Space&&this.mode==="input"){this.action("menu");return true;}
+    const command=commands.get(key);if(command)this.action("tutorial:"+command);return true;
+  }
+  private stop() {this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});if(this.click)this.click.stop(false);if(this.narration)this.narration.stop();this.queued=[];this.held=this.codes.map(k=>KeyboardManager.isKeyPressed(k));this.feedback="";}
   public action(action:string) {
+    if(this.interactionsBlocked)return;
+    if(action==="tutorial") {this.stop();this.score=null;this.mode="tutorial";this.ui.show("tutorial");this.tutorial.start(getTime());return;}
+    if(action.startsWith("tutorial:")) {
+      const command=action.slice(9);
+      if(command==="replay")this.ui.restartTutorialDemo();
+      if(command==="next"&&this.tutorial.active&&this.tutorial.step==="placement") {this.stop();this.mode="placement";this.ui.show("placement");this.placement.scan();return;}
+      if(command==="next"&&this.tutorial.active&&this.tutorial.step==="complete"){this.tutorial.stop(true);return;}
+      this.tutorial.action(command,getTime());return;
+    }
+    if(action==="menu"&&this.tutorial.active&&(this.mode==="input"||this.mode==="placement")) {
+      if(this.mode==="placement"&&!this.placement.placed)return;
+      if(this.mode==="placement")this.tutorial.action("next",getTime());
+      this.mode="tutorial";this.ui.show("tutorial");this.tutorial.activity(getTime());this.tutorial.render();return;
+    }
     if(action==="scan"){this.placement.scan();return;}
     if(action==="confirm"){if(this.placement.confirm())this.action("menu");return;}
     if(this.placement.placed&&this.placement.scanning&&action!=="placement")this.placement.cancel();
-    if(!this.placement.placed&&action!=="placement"&&action!=="scan"&&action!=="confirm"){this.mode="placement";this.ui.show("placement");return;}
-    if(action.startsWith("input:")) {const method=action.slice(6) as InputMethod;if(INPUT_NAMES[method]){this.inputMethod=method;this.queued=[];this.ui.setInputMethod(method);this.instrument.setPinchEnabled(false);}return;}
+    if(!this.placement.placed&&action!=="placement"&&action!=="scan"&&action!=="confirm"&&!(action==="input"&&this.tutorial.active)&&!(action.startsWith("input:")&&this.tutorial.active)){this.mode="placement";this.ui.show("placement");return;}
+    if(action.startsWith("input:")) {const method=action.slice(6) as InputMethod;if(INPUT_NAMES[method]){this.inputMethod=method;this.queued=[];this.ui.setInputMethod(method);this.instrument.setPinchEnabled(false);if(this.tutorial.active)this.tutorial.changedMethod(getTime());}return;}
     if(action==="slower"||action==="faster") {if(this.mode==="select")this.bpm=Math.max(40,Math.min(80,this.bpm+(action==="slower"?-10:10)));this.ui.setTempo(this.bpm);return;}
     if(action.startsWith("song")){this.songIndex=Number(action.slice(4));this.beginSong();return;}
     if(action==="restart") {this.beginSong();return;}
@@ -82,6 +141,7 @@ export class KalisensesMain extends BaseScriptComponent {
     print("[Kalisenses] MODE "+this.mode);
   }
   public beginSong(song:Song=SONGS[this.songIndex]) {
+    if(this.interactionsBlocked)return;
     if(!this.placement.placed)return;
     this.stop();this.mode="countin";this.ui.show("performance");this.startMs=getTime()*1000+4*60000/this.bpm;
     let beat=0;const times=song.notes.map((_,i)=>{const t=this.startMs+beat*60000/this.bpm;beat+=song.beats[i];return t;});
@@ -89,12 +149,14 @@ export class KalisensesMain extends BaseScriptComponent {
     print("[Kalisenses] COUNTIN "+song.name+" "+this.bpm+" BPM");
   }
   private update() {
+    this.narration.update();if(this.narrationLocked)this.suppressHeldPointers();
     if(this.previewTracking)this.previewTracking.enabled=!this.lockPreviewCamera;
     const now=getTime()*1000;
     // Poll as well as listening for events, preserving short taps and clearing released state.
     this.codes.forEach((k,i)=>{const down=KeyboardManager.isKeyPressed(k);if(down&&!this.held[i])this.noteDown("physical",i,String(i));if(!down)this.noteUp("physical",String(i));this.held[i]=down;});
-    const playable=this.mode==="free"||this.mode==="playing"||this.mode==="countin";
-    this.ui.setPlayable(playable);this.instrument.setPinchEnabled(playable&&this.inputMethod==="pinch");
+    // Keep the current target alive until lift/unpinch has delivered its release.
+    const playable=this.mode==="free"||this.mode==="playing"||this.mode==="countin"||(this.mode==="tutorial"&&(this.tutorial.canPlay()||this.tutorial.waitingRelease));
+    this.ui.setPlayable(playable);this.instrument.setPinchEnabled(!this.narrationLocked&&playable&&this.inputMethod==="pinch");
     if(this.mode==="countin") {
       const beat=Math.floor((now-(this.startMs-4*60000/this.bpm))/(60000/this.bpm));
       if(beat<4 && beat!==this.lastBeat) {this.lastBeat=beat;this.countInPulses++;this.click.play(1);}
@@ -103,6 +165,8 @@ export class KalisensesMain extends BaseScriptComponent {
     }
     const presses=this.queued;this.queued=[];
     presses.forEach(p=>{
+      if(this.interactionsBlocked)return;
+      if(this.mode==="tutorial") {this.pluck(p.index);this.tutorial.performed(p.source,p.index,p.contact,this.contacts.isHeld(p.source,p.contact),now/1000);return;}
       if(this.mode!=="free" && this.mode!=="playing")return;
       if(this.mode==="playing" && p.time<this.startMs)return;
       this.pluck(p.index);
@@ -124,15 +188,23 @@ export class KalisensesMain extends BaseScriptComponent {
         this.mode="results";this.stop();this.ui.setResults(this.score.percent,this.score.correct,this.score.incorrect,this.score.missed);this.ui.show("results");this.instrument.celebrate(now/1000);print("[Kalisenses] RESULTS "+JSON.stringify({percent:this.score.percent,correct:this.score.correct,incorrect:this.score.incorrect,missed:this.score.missed}));
       }
     }
+    if(this.mode==="tutorial") {
+      if(!this.narrationLocked){const hands=this.tutorialHands();this.tutorial.update(now/1000,hands.tracked,hands.attempting,this.instrument.hoveredNote);}cue=this.tutorial.targetIndex();
+      if(!this.narrationLocked&&this.tutorial.step==="timed") {const beat=Math.floor((now/1000-this.tutorial.timedStart)*this.bpm/60);if(beat!==this.tutorialBeat){this.tutorialBeat=beat;this.click.play(1);}}
+      else this.tutorialBeat=-1;
+      this.ui.updateTutorialDemo(now/1000);
+    }
     this.instrument.updateVisuals(now/1000,cue);
   }
   public noteDown(source:InputMethod,index:number,contact:string):boolean {
     if(!Number.isInteger(index)||index<0||index>=NOTES.length)return false;
     if(!this.contacts.down(source,contact))return false;
-    if(source!==this.inputMethod||(this.mode!=="free"&&this.mode!=="playing"))return false;
-    this.queued.push({index,time:getTime()*1000});return true;
+    if(this.interactionsBlocked)return false;
+    if(this.tutorial&&this.tutorial.active)this.tutorial.activity(getTime());
+    if(source!==this.inputMethod||(this.mode!=="free"&&this.mode!=="playing"&&!(this.mode==="tutorial"&&this.tutorial.canPlay())))return false;
+    this.queued.push({index,time:getTime()*1000,source,contact});return true;
   }
-  public noteUp(source:InputMethod,contact:string) {this.contacts.up(source,contact);}
+  public noteUp(source:InputMethod,contact:string) {this.contacts.up(source,contact);if(this.tutorial&&!this.interactionsBlocked)this.tutorial.release(source,contact,getTime());}
   private watchRelease(pointer?:Interactor) {
     // LEAF may create interactors after startup. First contact is safely
     // after SIK initialization; listen globally so release outside a pad
@@ -140,6 +212,7 @@ export class KalisensesMain extends BaseScriptComponent {
     if(!pointer||this.watchedPointers.has(pointer))return;
     this.watchedPointers.add(pointer);
     this.releaseSubscriptions.push(pointer.onTriggerEnd.add(()=>{
+      this.suppressedPointers.delete(pointer);
       const contact=String(pointer.inputType);this.noteUp("virtual",contact);this.noteUp("pinch",contact);
     }));
   }

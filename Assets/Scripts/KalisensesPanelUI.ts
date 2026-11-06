@@ -8,7 +8,9 @@ import {NOTES,LETTERS} from "./KalisensesMusic";
 import {RoundedRectangle} from "SpectaclesUIKit.lspkg/Scripts/Visuals/RoundedRectangle/RoundedRectangle";
 import {AMBER,SECONDARY,SURFACE,DEEP,INK} from "./KalisensesTheme";
 import {InputMethod,INPUT_NAMES,NotePointer} from "./KalisensesInput";
-import {TargetingMode} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Interactor";
+import {TargetingMode,Interactor} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Interactor";
+import {TutorialView} from "./KalisensesTutorial";
+import {KalisensesGestureDemo} from "./KalisensesGestureDemo";
 const THEME_FONT=requireAsset("../Fonts/Outfit.ttf") as Font;
 
 type Role="title"|"body"|"key"|"note";
@@ -22,6 +24,9 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   onAction=new Event<string>();
   onNoteDown=new Event<NotePointer>();
   onNoteUp=new Event<string>();
+  public interactionLocked=false;
+  public canInteract:(pointer:Interactor)=>boolean=()=>true;
+  private buttons:Button[]=[];private disarmButtons:(()=>void)[]=[];
   private inputMethod:InputMethod="physical";
   private inputLabels:Text[]=[];
   private inputDetails!:Text;private freeHelp!:Text;
@@ -32,6 +37,10 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private panels:Record<string,SceneObject>={};
   private status!:Text; private feedback!:Text; private results!:Text; private tempo!:Text;
   public cueText="";
+  public tutorialView:TutorialView|null=null;
+  private tutorialTitle!:Text;private tutorialCaption!:Text;private tutorialCue!:Text;private tutorialStatus!:Text;
+  private tutorialNext!:Text;private tutorialMute!:Text;private demoLabel!:Text;private demoAnchor!:SceneObject;
+  private demonstration:KalisensesGestureDemo|null=null;
   public initializeView() {
     this.sceneObject.createComponent("Component.Canvas");
     let f=this.panel("menu");
@@ -40,6 +49,18 @@ export class KalisensesPanelUI extends BaseScriptComponent {
     let r=this.row(f);this.button(r,"Free Play",15,()=>this.onAction.invoke("free"));this.button(r,"Follow Along",15,()=>this.onAction.invoke("select"));
     this.inputLabels.push(this.label(f,"Physical Keyboard","body",2));
     r=this.row(f);this.button(r,"Input Method",18,()=>this.onAction.invoke("input"));this.button(r,"Placement",12,()=>this.onAction.invoke("placement"));
+    const learn=this.button(f,"Learn to Play",26,()=>this.onAction.invoke("tutorial"));learn.text=global.deviceInfoSystem.isEditor()?"Learn to Play [Space]":"Learn to Play";
+    f=this.panel("tutorial");this.tutorialTitle=this.label(f,"LEARN","title",2.5);
+    this.tutorialCaption=this.label(f,"","body",5.5);
+    this.tutorialCue=this.label(f,"","title",2.5);this.tutorialCue.textFill.color=AMBER;
+    const demoRow=this.object("Tutorial Demonstration",f.sceneObject);this.demoAnchor=demoRow;
+    this.item(f,demoRow,32,6.5);
+    const demoText=this.flex(demoRow,false,32,6.5);this.demoLabel=this.label(demoText,"","note",6.5);
+    this.tutorialStatus=this.label(f,"","note",2.5);
+    r=this.row(f);this.tutorialNext=this.button(r,"Next",7,()=>this.onAction.invoke("tutorial:next"));
+    this.button(r,"Replay",8,()=>this.onAction.invoke("tutorial:replay"));this.tutorialMute=this.button(r,"Mute",7,()=>this.onAction.invoke("tutorial:mute"));
+    this.button(r,"Help",7,()=>this.onAction.invoke("tutorial:help"));
+    r=this.row(f);this.button(r,"Input",10,()=>this.onAction.invoke("input"));this.button(r,"Skip",9,()=>this.onAction.invoke("tutorial:skip"));this.button(r,"Exit",9,()=>this.onAction.invoke("tutorial:exit"));
     f=this.panel("placement");this.label(f,"TABLETOP PLACEMENT","title",3);
     this.placementStatus=this.label(f,"Virtual tabletop · laptop preview","body",6);
     r=this.row(f);this.button(r,"Find Surface",15,()=>this.onAction.invoke("scan"));this.button(r,"Confirm Placement",16,()=>this.onAction.invoke("confirm"));
@@ -70,7 +91,8 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private item(parent:FlexLayout,s:SceneObject,w?:number,h?:number) {const i=s.createComponent(FlexItem.getTypeName()) as FlexItem;i.flexShrink=0;if(w!==undefined)i.overrideWidth=w;if(h!==undefined)i.overrideHeight=h;parent.addItems([i]);}
   private panel(name:string):FlexLayout {
     const s=this.object("Panel-"+name,this.sceneObject);this.panels[name]=s;
-    const height=name==="input"?31:name==="select"?28:name==="results"?24:name==="placement"?22:name==="menu"?21:15;
+    if(name==="tutorial")s.getTransform().setLocalPosition(new vec3(0,1,0));
+    const height=name==="tutorial"?36:name==="input"?31:name==="select"?28:name==="results"?24:name==="placement"?22:name==="menu"?26:15;
     const backing=this.object("Backing-"+name,s);
     const plate=backing.createComponent(BackPlate.getTypeName()) as BackPlate;plate.size=new vec2(34,height);plate.style="simple";
     plate.onInitialized.add(()=>{const rr=backing.getComponent(RoundedRectangle.getTypeName()) as RoundedRectangle;rr.gradient=false;rr.backgroundColor=DEEP;rr.opacity=this.backingOpacity;});
@@ -83,7 +105,10 @@ export class KalisensesPanelUI extends BaseScriptComponent {
     t.horizontalOverflow=HorizontalOverflow.Overflow;t.verticalOverflow=VerticalOverflow.Overflow;t.layoutRect=Rect.create(-w/2,w/2,-h/2,h/2);this.item(parent,s,w,h);return t;
   }
   private button(parent:FlexLayout,value:string,w:number,cb:()=>void):Text {
-    const s=this.object(value,parent.sceneObject);const b=s.createComponent(Button.getTypeName()) as Button;b.setTheme("SnapOS2","Secondary");b.size=new vec3(w,4,1);b.initialize();b.visual.baseDefaultColor=SURFACE;b.visual.baseHoveredColor=SECONDARY;b.visual.baseTriggeredColor=AMBER;b.onTriggerUp.add(cb);
+    const s=this.object(value,parent.sceneObject);const b=s.createComponent(Button.getTypeName()) as Button;b.setTheme("SnapOS2","Secondary");b.size=new vec3(w,4,1);b.initialize();b.visual.baseDefaultColor=SURFACE;b.visual.baseHoveredColor=SECONDARY;b.visual.baseTriggeredColor=AMBER;
+    this.buttons.push(b);const armed=new Set<Interactor>();this.disarmButtons.push(()=>armed.clear());
+    b.onTriggerDown.add(e=>{if(!this.interactionLocked&&this.canInteract(e.interactor))armed.add(e.interactor);});
+    b.onTriggerUp.add(e=>{const started=armed.delete(e.interactor);if(started&&!this.interactionLocked&&this.canInteract(e.interactor))cb();});
     const f=this.flex(s,true,w,4);const t=this.label(f,value,"body",3,w-.5);t.sceneObject.getTransform().setLocalPosition(new vec3(0,0,.15));this.item(parent,s,w,4);
     return t;
   }
@@ -94,7 +119,32 @@ export class KalisensesPanelUI extends BaseScriptComponent {
     this.inputDetails.text=help;this.freeHelp.text=help;
   }
   public setPlayable(active:boolean) {this.playable=active;if(this.pads)this.pads.enabled=active&&this.inputMethod==="virtual";}
+  public setInteractionLocked(locked:boolean) {
+    if(locked===this.interactionLocked)return;this.interactionLocked=locked;
+    this.disarmButtons.forEach(clear=>clear());this.buttons.forEach(b=>b.interactable.enabled=!locked);
+    if(this.tutorialView)this.tutorialStatus.text=locked?"Listening… controls return after narration.":this.tutorialView.status;
+  }
   public setPlacementStatus(status:string) {this.placementStatus.text=status;}
+  public initializeTutorialDemo(mesh:RenderMesh,material:Material) {
+    this.demonstration=new KalisensesGestureDemo(this.demoAnchor,mesh,material);
+    this.demonstration.root.getTransform().setLocalPosition(new vec3(-9,0,0));this.demonstration.root.enabled=false;
+  }
+  public setTutorial(v:TutorialView) {
+    const old=this.tutorialView;
+    if(v.demo&&(!old||!old.demo||old.left!==v.left||old.largeDemo!==v.largeDemo))this.restartTutorialDemo();
+    this.tutorialView=v;this.tutorialTitle.text=v.title;this.tutorialCaption.text=v.caption;this.tutorialCue.text=v.cue;this.tutorialStatus.text=this.interactionLocked?"Listening… controls return after narration.":v.status;
+    this.tutorialMute.text=v.muted?"Unmute":"Mute";this.tutorialNext.sceneObject.getParent().enabled=v.next;
+    this.demoLabel.text=v.demo?(global.deviceInfoSystem.isEditor()?"SIMULATED DEMO\n":"GESTURE DEMO\n")+(v.left?"Left":"Right")+": aim, pinch, open":global.deviceInfoSystem.isEditor()?"Space next  |  0 replay  |  1 mute  |  2 input\n3 skip  |  4 exit  |  5 help\nAmber = next note. Green = played.":"Amber = next note\nGreen = played note";
+    this.demoLabel.sceneObject.getTransform().setLocalPosition(new vec3(v.demo?4:0,0,.1));
+    if(this.demonstration)this.demonstration.root.enabled=v.demo;
+  }
+  public restartTutorialDemo() {if(this.demonstration)this.demonstration.restart();}
+  public updateTutorialDemo(time:number) {
+    if(this.demonstration&&this.tutorialView&&this.tutorialView.demo){
+      this.demonstration.update(time,this.tutorialView.left,this.tutorialView.largeDemo);
+      this.demoLabel.text=(global.deviceInfoSystem.isEditor()?"SIMULATED ":"DEMO ")+(this.tutorialView.left?"LEFT":"RIGHT")+" HAND\n"+this.demonstration.phase;
+    }
+  }
   public show(mode:string) {Object.keys(this.panels).forEach(k=>this.panels[k].enabled=k===mode);}
   public setTempo(bpm:number) {this.tempo.text=bpm+" BPM";}
   public setCue(value:string,feedback:string,color:vec4) {this.cueText=value;this.status.text=value;this.feedback.text=feedback;this.feedback.textFill.color=color;}

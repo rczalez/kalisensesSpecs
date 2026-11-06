@@ -7,4 +7,5 @@ export class NoteContacts {
   private held=new Set<string>();
   down(source:InputMethod,contact:string):boolean {const k=source+":"+contact;if(this.held.has(k))return false;this.held.add(k);return true;}
   up(source:InputMethod,contact:string) {this.held.delete(source+":"+contact);}
+  isHeld(source:InputMethod,contact:string):boolean {return this.held.has(source+":"+contact);}
 }
