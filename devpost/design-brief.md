@@ -117,6 +117,16 @@ These rules apply to the existing scored mode, not the tutorial:
 - Percentage is earned points divided by the maximum target points, rounded to a whole percent for display. At completion, correct plus missed equals the target count; extra incorrect presses do not reduce earned points.
 - Non-note keys and input outside the active scoring period do not score.
 
+## Idle ambience
+
+Phase Four adds a menu-only idle state after approximately ten seconds without interaction. Accepted menu actions, control hover/press and keyboard input restart the timer. The tutorial, narration, Free Play, Follow Along (including count-in and pause), selection/placement/input views and results are excluded; pauses between notes never start background music.
+
+Idle fireflies appear gradually at 2.25 per second (50% more than the previous 1.5 rate), with up to 24 active ambient lights, within the existing overall limit of 24. They fade in gently, live for approximately ten seconds and fade out near the end. Keep them away from the kalimba, labels, current note orbs, virtual keys and active menu using the existing dynamic exclusions. Stop idle spawning as soon as interaction resumes and let existing lights expire naturally.
+
+Idle ambience is visual only. The idle song, music player, music mute control and music shortcut were removed at the user's request. Existing instrument sounds, count-in clicks and tutorial narration are preserved. Ambience never blocks controls.
+
+No idle music is included or planned for this phase. See [Phase Four preview checks](../Assets/Verification/PhaseFourVerification.md). Optical contrast, physical comfort and sustained performance still require SPECS device checks.
+
 ## Guided tutorial and fallback interactions
 
 Learn to Play opens a progressive tutorial with short captions, offline audio narration, visual demonstrations and unlimited retries. It can be completed using laptop keyboard events, including navigation. It does not introduce score penalties.

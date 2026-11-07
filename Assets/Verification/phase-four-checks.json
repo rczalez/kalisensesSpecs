@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-06",
+  "environment": "Lens Studio 5.23.2 laptop preview",
+  "hardwareValidated": false,
+  "finalScope": "visual-only idle fireflies; idle song and music controls removed",
+  "behavior": {
+    "idleDelaySeconds": 10,
+    "mainMenuOnly": true,
+    "spawnsPerSecond": 2.25,
+    "previousSpawnsPerSecond": 1.5,
+    "ambientCap": 24,
+    "previousAmbientCap": 18,
+    "overallCap": 24,
+    "lifetimeSeconds": 10,
+    "fadeInSeconds": 1.5,
+    "fadeOutSeconds": 2
+  },
+  "idleAudio": {
+    "present": false,
+    "generatedSongAssetsRemoved": true,
+    "muteControlRemoved": true,
+    "musicShortcutRemoved": true,
+    "noteAndNarrationAudioPreserved": true
+  },
+  "checks": {
+    "idleScenario": {
+      "status": "passed",
+      "timestamp": "22:57:29.786",
+      "evidence": [
+        "I 22:57:29.786 [Preview 1] [Assets/Scripts/KalisensesIdleScenario.ts:35] [ACCEPTANCE] PASS fireflies-only idle, no extra audio component, cap24, keyboard dismissal, Free Play and Follow Along/tutorial exclusion",
+        "I 22:57:29.786 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 18.190s]PASSED: kalisenses-idle-ambience"
+      ]
+    },
+    "earlierPhaseKeyboard": {
+      "status": "passed",
+      "timestamp": "22:33:33.648",
+      "keys": 17
+    },
+    "earlierPhaseSharedInput": {
+      "status": "passed",
+      "timestamp": "22:36:28.582",
+      "simulatedSikNotes": 34
+    },
+    "sourceInspection": "No IdleKalimba/idle audio/music mute references in Assets/Scripts or Assets/Tools"
+  }
+}
