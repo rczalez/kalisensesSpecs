@@ -17,6 +17,9 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public highlighted=-1;
   public fireflyCount=0;
   public followCues!:KalisensesFollowCues;
+  public readonly fireflyLifetime=10;
+  public readonly maxFireflies=24;
+  public readonly fireflySize=.55;
   private outcomes:{index:number;time:number;kind:"correct"|"incorrect"|"missed"}[]=[];
   public onNoteDown=new Event<NotePointer>();
   public onNoteUp=new Event<string>();
@@ -25,11 +28,50 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public hoveredNote=-1;
   private pinchEnabled=false;
   private mats:Material[]=[];private flashes:number[]=new Array(17).fill(-100);
-  private flies:{object:SceneObject;mat:Material;born:number;seed:number}[]=[];
+  private flies:{object:SceneObject;mat:Material;born:number;seed:number;origin:vec3}[]=[];
   private unit!:RenderMesh;
+  private fireflyCamera:Camera|null=null;
+  private menuCorners:()=>vec3[][]=()=>[];
+  private clearRects:{left:number;right:number;top:number;bottom:number}[]=[];
+  public configureFireflySpace(camera:Camera,menuCorners:()=>vec3[][]) {this.fireflyCamera=camera;this.menuCorners=menuCorners;}
+  private refreshFireflySpace() {
+    this.clearRects=[];if(!this.fireflyCamera)return;
+    const matrix=this.sceneObject.getTransform().getWorldTransform(),instrument:vec3[]=[];
+    // Separate tight regions keep the open space above/below the instrument available.
+    for(const x of [-18.5,18.5])for(const y of [-3,4.5])for(const z of [-13.5,13.5])instrument.push(matrix.multiplyPoint(new vec3(x,y,z)));
+    const orbs:vec3[][]=[];
+    if(this.followCues)this.followCues.slots.filter(s=>s.enabled).forEach(slot=>{
+      const p=slot.getTransform().getLocalPosition(),corners:vec3[]=[];
+      for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1])corners.push(matrix.multiplyPoint(p.add(new vec3(x,y,z))));
+      orbs.push(corners);
+    });
+    const view=this.fireflyCamera.sceneObject.getTransform().getInvertedWorldTransform();
+    for(const corners of [instrument,...orbs,...this.menuCorners()]) {
+      const points=corners.filter(p=>view.multiplyPoint(p).z<-this.fireflyCamera.near).map(p=>this.fireflyCamera.worldSpaceToScreenSpace(p));
+      if(!points.length)continue;
+      this.clearRects.push({left:Math.min(...points.map(p=>p.x))-.015,right:Math.max(...points.map(p=>p.x))+.015,top:Math.min(...points.map(p=>p.y))-.015,bottom:Math.max(...points.map(p=>p.y))+.015});
+    }
+  }
+  public fireflyPositionClear(world:vec3):boolean {
+    const local=this.sceneObject.getTransform().getInvertedWorldTransform().multiplyPoint(world);
+    if(Math.abs(local.x)<18.5&&local.y>-3&&local.y<4.5&&Math.abs(local.z)<13.5)return false;
+    if(!this.fireflyCamera)return false;
+    const point=this.fireflyCamera.worldSpaceToScreenSpace(world);
+    return Number.isFinite(point.x)&&Number.isFinite(point.y)&&!this.clearRects.some(r=>point.x>=r.left&&point.x<=r.right&&point.y>=r.top&&point.y<=r.bottom);
+  }
+  private findFireflyPosition():vec3|null {
+    if(!this.fireflyCamera)return null;
+    for(let attempt=0;attempt<32;attempt++) {
+      // Sample the whole visible environment, then leave each light anchored in world space.
+      const point=this.fireflyCamera.screenSpaceToWorldSpace(new vec2(.03+Math.random()*.94,.03+Math.random()*.94),80+Math.random()*80);
+      if(this.fireflyPositionClear(point))return point;
+    }
+    return null;
+  }
   public initializeInstrument() {
     this.unit=this.boxMesh();
     this.followCues=new KalisensesFollowCues(this.sceneObject,this.sphere,this.glow,this.lengths);
+    this.createEvent("OnDestroyEvent").bind(()=>this.flies.forEach(f=>f.object.destroy()));
     if(global.deviceInfoSystem.isEditor()) {
       this.box("Virtual Tabletop",this.sceneObject,new vec3(0,-3,0),new vec3(70,2,76),SURFACE);
       for(const x of [-29,29]) for(const z of [-29,29]) this.box("Table Leg",this.sceneObject,new vec3(x,-39,z),new vec3(2,70,2),DEEP);
@@ -79,14 +121,18 @@ export class KalisensesInstrument extends BaseScriptComponent {
   }
   public clearFollowFeedback() {this.followCues.clear();this.outcomes=[];}
   private spawn(time:number,count:number) {
-    for(let i=0;i<count && this.flies.length<24;i++) {
-      const seed=Math.random()*Math.PI*2;const o=global.scene.createSceneObject("Firefly");o.setParent(this.sceneObject);
-      const r=o.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;r.mesh=this.sphere;const mat=this.glow.clone();r.mainMaterial=mat;
-      this.flies.push({object:o,mat,born:time,seed});
+    this.refreshFireflySpace();
+    for(let i=0;i<count && this.flies.length<this.maxFireflies;i++) {
+      const origin=this.findFireflyPosition();if(!origin)continue;
+      const seed=Math.random()*Math.PI*2;const o=global.scene.createSceneObject("Firefly");
+      const r=o.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;r.mesh=this.sphere;const mat=this.glow.clone();mat.mainPass.blendMode=BlendMode.Add;mat.mainPass.depthWrite=false;r.mainMaterial=mat;
+      this.flies.push({object:o,mat,born:time,seed,origin});
+      o.getTransform().setWorldPosition(origin);o.getTransform().setLocalScale(vec3.one().uniformScale(this.fireflySize));
     }
     this.fireflyCount=this.flies.length;
   }
   public updateVisuals(time:number,cue:number) {
+    this.refreshFireflySpace();
     this.highlighted=cue;
     this.tines.forEach((s,i)=>{const age=time-this.flashes[i];const played=age<.45;
       const outcome=this.outcomes.find(o=>o.index===i&&time-o.time<.65);
@@ -96,10 +142,16 @@ export class KalisensesInstrument extends BaseScriptComponent {
     });
     for(let i=this.flies.length-1;i>=0;i--) {
       const f=this.flies[i],age=time-f.born;
-      if(age>3) {f.object.destroy();this.flies.splice(i,1);continue;}
-      // Always outside the 35cm instrument and the label area.
-      f.object.getTransform().setLocalPosition(new vec3((f.seed<Math.PI?-1:1)*(21+Math.sin(age+f.seed)*3),5+age*2+Math.sin(f.seed+age)*2,Math.cos(age+f.seed)*10));
-      const fade=Math.max(0,1-age/3);f.object.getTransform().setLocalScale(vec3.one().uniformScale(.18*fade));f.mat.mainPass.baseColor=new vec4(fade,.92*fade,.3*fade,1);
+      if(age>=this.fireflyLifetime) {f.object.destroy();this.flies.splice(i,1);continue;}
+      const drift=new vec3(Math.sin(age*.45+f.seed)*2,age*.6+Math.sin(age*.5+f.seed),Math.cos(age*.35+f.seed)*2);
+      let position=f.origin.add(drift);
+      if(!this.fireflyPositionClear(position)) {
+        const replacement=this.findFireflyPosition();f.object.enabled=!!replacement;
+        if(!replacement)continue;position=replacement;f.origin=position.sub(drift);
+      } else f.object.enabled=true;
+      f.object.getTransform().setWorldPosition(position);
+      const end=Math.max(0,Math.min(1,(this.fireflyLifetime-age)/2)),fade=end*end*(3-2*end);
+      f.object.getTransform().setLocalScale(vec3.one().uniformScale(this.fireflySize*(.5+.5*fade)));f.mat.mainPass.baseColor=new vec4(.65*fade,fade,.34*fade,1);
     }
     this.fireflyCount=this.flies.length;
   }

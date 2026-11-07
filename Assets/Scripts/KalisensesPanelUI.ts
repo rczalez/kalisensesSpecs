@@ -35,6 +35,7 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private pads!:SceneObject;
   private methodButtons:Record<string,Text>={};
   private panels:Record<string,SceneObject>={};
+  private panelHeights:Record<string,number>={};
   private status!:Text; private feedback!:Text; private results!:Text; private tempo!:Text;
   private pauseLabel!:Text;
   public cueText="";
@@ -96,6 +97,7 @@ export class KalisensesPanelUI extends BaseScriptComponent {
     if(name==="tutorial")s.getTransform().setLocalPosition(new vec3(0,1,0));
     if(name==="select")s.getTransform().setLocalPosition(new vec3(0,1.5,0));
     const height=name==="tutorial"?36:name==="input"?31:name==="select"?34:name==="results"?24:name==="placement"?22:name==="menu"?26:15;
+    this.panelHeights[name]=height;
     const backing=this.object("Backing-"+name,s);
     const plate=backing.createComponent(BackPlate.getTypeName()) as BackPlate;plate.size=new vec2(34,height);plate.style="simple";
     plate.onInitialized.add(()=>{const rr=backing.getComponent(RoundedRectangle.getTypeName()) as RoundedRectangle;rr.gradient=false;rr.backgroundColor=DEEP;rr.opacity=this.backingOpacity;});
@@ -151,6 +153,19 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   public show(mode:string) {Object.keys(this.panels).forEach(k=>this.panels[k].enabled=k===mode);}
   public setTempo(bpm:number) {this.tempo.text=bpm+" BPM";}
   public setPaused(paused:boolean) {if(this.pauseLabel)this.pauseLabel.text=paused?"Resume":"Pause";}
+  public fireflyMenuCorners():vec3[][] {
+    const regions=Object.keys(this.panels).filter(k=>this.panels[k].enabled).map(k=>{
+      const matrix=this.panels[k].getTransform().getWorldTransform(),points:vec3[]=[];
+      for(const x of [-18,18])for(const y of [-this.panelHeights[k]/2-1,this.panelHeights[k]/2+1])for(const z of [-1,2])points.push(matrix.multiplyPoint(new vec3(x,y,z)));
+      return points;
+    });
+    if(this.pads&&this.pads.enabled) {
+      const matrix=this.pads.getTransform().getWorldTransform(),points:vec3[]=[];
+      for(const x of [-23,23])for(const y of [-6,6])for(const z of [-1,2])points.push(matrix.multiplyPoint(new vec3(x,y,z)));
+      regions.push(points);
+    }
+    return regions;
+  }
   public setCue(value:string,feedback:string,color:vec4) {this.cueText=value;this.status.text=value;this.feedback.text=feedback;this.feedback.textFill.color=color;}
   public setResults(percent:number,correct:number,incorrect:number,missed:number) {this.results.text=percent+"%  •  Keep your light growing!\nCorrect "+correct+"    Incorrect "+incorrect+"    Missed "+missed;}
   // Labels live beside measured physical tines, rather than in a flat menu layout.

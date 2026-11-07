@@ -58,6 +58,7 @@ export class KalisensesMain extends BaseScriptComponent {
       if(this.previewTracking)this.previewTracking.enabled=!this.lockPreviewCamera;
     }
     this.codes=keyboardCodes();this.ui.initializeView();this.instrument.initializeInstrument();this.ui.labelTines(this.instrument.sceneObject,this.instrument.lengths);
+    this.instrument.configureFireflySpace(this.cameraObject.getComponent("Component.Camera") as Camera,()=>this.ui.fireflyMenuCorners());
     for(let i=0;i<32;i++) {const a=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;a.playbackMode=Audio.PlaybackMode.LowLatency;a.volume=this.volume;this.voices.push(a);}
     this.click=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;this.click.audioTrack=requireAsset("../GeneratedSFX/CountClick.wav") as AudioTrackAsset;this.click.volume=.15;this.click.playbackMode=Audio.PlaybackMode.LowLatency;
     this.ui.onAction.add(action=>this.action(action));
