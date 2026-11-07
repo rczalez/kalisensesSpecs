@@ -8,6 +8,7 @@ import {InteractionManager} from "SpectaclesInteractionKit.lspkg/Core/Interactio
 import {HandInputData} from "SpectaclesInteractionKit.lspkg/Providers/HandInputData/HandInputData";
 import {KalisensesTutorial} from "./KalisensesTutorial";
 import {KalisensesNarration} from "./KalisensesNarration";
+import {KalisensesIdleAmbience} from "./KalisensesIdleAmbience";
 const TRACKS:AudioTrackAsset[]=[
   requireAsset("../GeneratedSFX/D6.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/B5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/G5.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/E5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/C5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/A4.wav") as AudioTrackAsset,
@@ -30,6 +31,7 @@ export class KalisensesMain extends BaseScriptComponent {
   public pausedAt=0;private resumeMode:"countin"|"playing"="playing";
   public inputMethod:InputMethod="physical";
   public tutorial!:KalisensesTutorial;public narration!:KalisensesNarration;
+  public idle!:KalisensesIdleAmbience;
   private tutorialHands:()=>{tracked:boolean;attempting:boolean}=()=>({tracked:false,attempting:false});
   private navigationHeld=new Set<Keys>();private tutorialBeat=-1;
   private narrationLocked=false;private narrationBeganAt=0;
@@ -46,8 +48,8 @@ export class KalisensesMain extends BaseScriptComponent {
     this.createEvent("OnStartEvent").bind(()=>this.initialize());
     this.createEvent("UpdateEvent").bind(()=>{if(this.ready)this.update();});
     this.createEvent("LateUpdateEvent").bind(()=>{if(this.ready&&this.lockPreviewCamera&&global.deviceInfoSystem.isEditor())this.seatCamera();});
-    this.createEvent("OnDisableEvent").bind(()=>this.stop());
-    this.createEvent("OnDestroyEvent").bind(()=>{this.stop();this.releaseSubscriptions.forEach(unsubscribe=>unsubscribe());});
+    this.createEvent("OnDisableEvent").bind(()=>{if(this.idle)this.idle.stop(getTime());this.stop();});
+    this.createEvent("OnDestroyEvent").bind(()=>{if(this.idle)this.idle.stop(getTime());this.stop();this.releaseSubscriptions.forEach(unsubscribe=>unsubscribe());});
   }
   private initialize() {
     if(global.deviceInfoSystem.isEditor()) {
@@ -59,6 +61,8 @@ export class KalisensesMain extends BaseScriptComponent {
     }
     this.codes=keyboardCodes();this.ui.initializeView();this.instrument.initializeInstrument();this.ui.labelTines(this.instrument.sceneObject,this.instrument.lengths);
     this.instrument.configureFireflySpace(this.cameraObject.getComponent("Component.Camera") as Camera,()=>this.ui.fireflyMenuCorners());
+    this.idle=new KalisensesIdleAmbience(time=>this.instrument.spawnAmbient(time),getTime());
+    this.ui.onUserActivity.add(()=>this.idle.activity(getTime()));
     for(let i=0;i<32;i++) {const a=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;a.playbackMode=Audio.PlaybackMode.LowLatency;a.volume=this.volume;this.voices.push(a);}
     this.click=this.sceneObject.createComponent("Component.AudioComponent") as AudioComponent;this.click.audioTrack=requireAsset("../GeneratedSFX/CountClick.wav") as AudioTrackAsset;this.click.volume=.15;this.click.playbackMode=Audio.PlaybackMode.LowLatency;
     this.ui.onAction.add(action=>this.action(action));
@@ -78,9 +82,10 @@ export class KalisensesMain extends BaseScriptComponent {
     this.placement.onStatus.add(status=>this.ui.setPlacementStatus(status));
     this.createEvent("KeyPressEvent").bind(e=>{
       if(this.interactionsBlocked){this.navigationHeld.add(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.contacts.down("physical",String(i));}return;}
+      this.idle.activity(getTime());
       if(this.tutorialKey(e.key))return;const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.noteDown("physical",i,String(i));}
     });
-    this.createEvent("KeyReleaseEvent").bind(e=>{this.navigationHeld.delete(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=false;this.noteUp("physical",String(i));}});
+    this.createEvent("KeyReleaseEvent").bind(e=>{if(!this.interactionsBlocked)this.idle.activity(getTime());this.navigationHeld.delete(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=false;this.noteUp("physical",String(i));}});
     this.seatCamera();this.placement.initialize();this.ready=true;
     if(!this.placement.placed){this.mode="placement";this.ui.show("placement");}
     print("[Kalisenses] READY 17 keys, L=B4, two modes, 32 voices");
@@ -94,7 +99,7 @@ export class KalisensesMain extends BaseScriptComponent {
   private setNarrationLocked(locked:boolean) {
     if(locked===this.narrationLocked)return;
     this.suppressHeldPointers();this.narrationLocked=locked;this.queued=[];
-    if(locked){this.narrationBeganAt=getTime();this.instrument.setPinchEnabled(false);}
+    if(locked){if(this.idle)this.idle.stop(getTime());this.narrationBeganAt=getTime();this.instrument.setPinchEnabled(false);}
     else if(this.tutorial)this.tutorial.resumeAfterNarration(Math.max(0,getTime()-this.narrationBeganAt),getTime());
     this.ui.setInteractionLocked(locked);
   }
@@ -113,6 +118,7 @@ export class KalisensesMain extends BaseScriptComponent {
   private stop() {this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});if(this.click)this.click.stop(false);if(this.narration)this.narration.stop();if(this.instrument.followCues)this.instrument.clearFollowFeedback();this.ui.setPaused(false);this.queued=[];this.held=this.codes.map(k=>KeyboardManager.isKeyPressed(k));this.feedback="";}
   public action(action:string) {
     if(this.interactionsBlocked)return;
+    if(this.idle)this.idle.activity(getTime());
     if(action==="pause") {
       const now=getTime()*1000;
       if(this.mode==="countin"||this.mode==="playing") {this.resumeMode=this.mode;this.pausedAt=now;this.mode="paused";this.queued=[];this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});this.click.stop(false);this.ui.setPaused(true);}
@@ -151,6 +157,7 @@ export class KalisensesMain extends BaseScriptComponent {
   public beginSong(song:Song=SONGS[this.songIndex]) {
     if(this.interactionsBlocked)return;
     if(!this.placement.placed)return;
+    this.idle.stop(getTime());
     this.stop();this.mode="countin";this.ui.show("performance");this.startMs=getTime()*1000+4*60000/this.bpm;
     let beat=0;const times=song.notes.map((_,i)=>{const t=this.startMs+beat*60000/this.bpm;beat+=song.beats[i];return t;});
     this.score=new PerformanceScore(song.notes,times);this.lastBeat=-1;this.countInPulses=0;
@@ -158,6 +165,7 @@ export class KalisensesMain extends BaseScriptComponent {
   }
   private update() {
     this.narration.update();if(this.narrationLocked)this.suppressHeldPointers();
+    this.idle.update(getTime(),this.mode==="menu"&&!this.narrationLocked&&!this.tutorial.active);
     if(this.previewTracking)this.previewTracking.enabled=!this.lockPreviewCamera;
     const now=getTime()*1000;
     // Poll as well as listening for events, preserving short taps and clearing released state.
@@ -213,6 +221,7 @@ export class KalisensesMain extends BaseScriptComponent {
     if(!Number.isInteger(index)||index<0||index>=NOTES.length)return false;
     if(!this.contacts.down(source,contact))return false;
     if(this.interactionsBlocked)return false;
+    if(this.idle)this.idle.activity(getTime());
     if(this.tutorial&&this.tutorial.active)this.tutorial.activity(getTime());
     if(source!==this.inputMethod||(this.mode!=="free"&&this.mode!=="playing"&&!(this.mode==="tutorial"&&this.tutorial.canPlay())))return false;
     this.queued.push({index,time:getTime()*1000,source,contact});return true;

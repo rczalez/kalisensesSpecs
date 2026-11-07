@@ -19,6 +19,7 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public followCues!:KalisensesFollowCues;
   public readonly fireflyLifetime=10;
   public readonly maxFireflies=24;
+  public readonly maxAmbientFireflies=24;
   public readonly fireflySize=.55;
   private outcomes:{index:number;time:number;kind:"correct"|"incorrect"|"missed"}[]=[];
   public onNoteDown=new Event<NotePointer>();
@@ -28,7 +29,7 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public hoveredNote=-1;
   private pinchEnabled=false;
   private mats:Material[]=[];private flashes:number[]=new Array(17).fill(-100);
-  private flies:{object:SceneObject;mat:Material;born:number;seed:number;origin:vec3}[]=[];
+  private flies:{object:SceneObject;mat:Material;born:number;seed:number;origin:vec3;ambient:boolean}[]=[];
   private unit!:RenderMesh;
   private fireflyCamera:Camera|null=null;
   private menuCorners:()=>vec3[][]=()=>[];
@@ -116,17 +117,18 @@ export class KalisensesInstrument extends BaseScriptComponent {
   }
   public pluck(index:number,time:number) {this.flashes[index]=time;this.spawn(time,2);}
   public celebrate(time:number) {this.spawn(time,12);}
+  public spawnAmbient(time:number) {if(this.flies.length<this.maxAmbientFireflies)this.spawn(time,1,true);}
   public showOutcome(index:number,kind:"correct"|"incorrect"|"missed",time:number) {
     this.outcomes=this.outcomes.filter(o=>o.index!==index&&time-o.time<.65);this.outcomes.push({index,time,kind});
   }
   public clearFollowFeedback() {this.followCues.clear();this.outcomes=[];}
-  private spawn(time:number,count:number) {
+  private spawn(time:number,count:number,ambient=false) {
     this.refreshFireflySpace();
     for(let i=0;i<count && this.flies.length<this.maxFireflies;i++) {
       const origin=this.findFireflyPosition();if(!origin)continue;
       const seed=Math.random()*Math.PI*2;const o=global.scene.createSceneObject("Firefly");
       const r=o.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;r.mesh=this.sphere;const mat=this.glow.clone();mat.mainPass.blendMode=BlendMode.Add;mat.mainPass.depthWrite=false;r.mainMaterial=mat;
-      this.flies.push({object:o,mat,born:time,seed,origin});
+      this.flies.push({object:o,mat,born:time,seed,origin,ambient});
       o.getTransform().setWorldPosition(origin);o.getTransform().setLocalScale(vec3.one().uniformScale(this.fireflySize));
     }
     this.fireflyCount=this.flies.length;
@@ -150,7 +152,8 @@ export class KalisensesInstrument extends BaseScriptComponent {
         if(!replacement)continue;position=replacement;f.origin=position.sub(drift);
       } else f.object.enabled=true;
       f.object.getTransform().setWorldPosition(position);
-      const end=Math.max(0,Math.min(1,(this.fireflyLifetime-age)/2)),fade=end*end*(3-2*end);
+      const end=Math.max(0,Math.min(1,(this.fireflyLifetime-age)/2)),start=Math.min(1,Math.max(0,age/1.5));
+      const fade=end*end*(3-2*end)*(f.ambient?start*start*(3-2*start):1);
       f.object.getTransform().setLocalScale(vec3.one().uniformScale(this.fireflySize*(.5+.5*fade)));f.mat.mainPass.baseColor=new vec4(.65*fade,fade,.34*fade,1);
     }
     this.fireflyCount=this.flies.length;

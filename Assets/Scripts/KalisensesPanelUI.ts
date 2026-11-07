@@ -22,6 +22,7 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   @input @hint("Warm neutral text tint") @widget(new ColorWidget()) ink:vec4=INK;
   @input @hint("Backing opacity in preview; validate on see-through Specs") @widget(new SliderWidget(.6,1,.05)) backingOpacity:number=.96;
   onAction=new Event<string>();
+  onUserActivity=new Event<void>();
   onNoteDown=new Event<NotePointer>();
   onNoteUp=new Event<string>();
   public interactionLocked=false;
@@ -112,7 +113,8 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private button(parent:FlexLayout,value:string,w:number,cb:()=>void):Text {
     const s=this.object(value,parent.sceneObject);const b=s.createComponent(Button.getTypeName()) as Button;b.setTheme("SnapOS2","Secondary");b.size=new vec3(w,4,1);b.initialize();b.visual.baseDefaultColor=SURFACE;b.visual.baseHoveredColor=SECONDARY;b.visual.baseTriggeredColor=AMBER;
     this.buttons.push(b);const armed=new Set<Interactor>();this.disarmButtons.push(()=>armed.clear());
-    b.onTriggerDown.add(e=>{if(!this.interactionLocked&&this.canInteract(e.interactor))armed.add(e.interactor);});
+    b.interactable.onHoverEnter.add(()=>{if(!this.interactionLocked)this.onUserActivity.invoke();});
+    b.onTriggerDown.add(e=>{if(!this.interactionLocked&&this.canInteract(e.interactor)){this.onUserActivity.invoke();armed.add(e.interactor);}});
     b.onTriggerUp.add(e=>{const started=armed.delete(e.interactor);if(started&&!this.interactionLocked&&this.canInteract(e.interactor))cb();});
     const f=this.flex(s,true,w,4);const t=this.label(f,value,"body",3,w-.5);t.sceneObject.getTransform().setLocalPosition(new vec3(0,0,.15));this.item(parent,s,w,4);
     return t;
