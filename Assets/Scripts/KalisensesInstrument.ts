@@ -5,6 +5,7 @@ import {TargetingMode} from "SpectaclesInteractionKit.lspkg/Core/Interactor/Inte
 import Event from "SpectaclesInteractionKit.lspkg/Utils/Event";
 import {HandInputData} from "SpectaclesInteractionKit.lspkg/Providers/HandInputData/HandInputData";
 import {NotePointer} from "./KalisensesInput";
+import {KalisensesFollowCues} from "./KalisensesFollowCues";
 /** Parametric geometry in cm: animated tines, a 35×25 body and a 70×50 tabletop. */
 @component
 export class KalisensesInstrument extends BaseScriptComponent {
@@ -15,6 +16,8 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public lengths=MIDIS.map(m=>18-(m-60)*.36);
   public highlighted=-1;
   public fireflyCount=0;
+  public followCues!:KalisensesFollowCues;
+  private outcomes:{index:number;time:number;kind:"correct"|"incorrect"|"missed"}[]=[];
   public onNoteDown=new Event<NotePointer>();
   public onNoteUp=new Event<string>();
   private pinchTargets:Interactable[]=[];
@@ -26,6 +29,7 @@ export class KalisensesInstrument extends BaseScriptComponent {
   private unit!:RenderMesh;
   public initializeInstrument() {
     this.unit=this.boxMesh();
+    this.followCues=new KalisensesFollowCues(this.sceneObject,this.sphere,this.glow,this.lengths);
     if(global.deviceInfoSystem.isEditor()) {
       this.box("Virtual Tabletop",this.sceneObject,new vec3(0,-3,0),new vec3(70,2,76),SURFACE);
       for(const x of [-29,29]) for(const z of [-29,29]) this.box("Table Leg",this.sceneObject,new vec3(x,-39,z),new vec3(2,70,2),DEEP);
@@ -70,6 +74,10 @@ export class KalisensesInstrument extends BaseScriptComponent {
   }
   public pluck(index:number,time:number) {this.flashes[index]=time;this.spawn(time,2);}
   public celebrate(time:number) {this.spawn(time,12);}
+  public showOutcome(index:number,kind:"correct"|"incorrect"|"missed",time:number) {
+    this.outcomes=this.outcomes.filter(o=>o.index!==index&&time-o.time<.65);this.outcomes.push({index,time,kind});
+  }
+  public clearFollowFeedback() {this.followCues.clear();this.outcomes=[];}
   private spawn(time:number,count:number) {
     for(let i=0;i<count && this.flies.length<24;i++) {
       const seed=Math.random()*Math.PI*2;const o=global.scene.createSceneObject("Firefly");o.setParent(this.sceneObject);
@@ -81,7 +89,9 @@ export class KalisensesInstrument extends BaseScriptComponent {
   public updateVisuals(time:number,cue:number) {
     this.highlighted=cue;
     this.tines.forEach((s,i)=>{const age=time-this.flashes[i];const played=age<.45;
-      this.mats[i].mainPass.baseColor=played?new vec4(.4,1,.66,1):i===cue?AMBER:this.hovered.has(i)?SECONDARY:INK;
+      const outcome=this.outcomes.find(o=>o.index===i&&time-o.time<.65);
+      const pulse=this.followCues.pulseLevels[i];
+      this.mats[i].mainPass.baseColor=pulse>0?new vec4(1,.75+.2*pulse,.2+.48*pulse,1):outcome?(outcome.kind==="correct"?new vec4(.4,1,.66,1):outcome.kind==="incorrect"?new vec4(1,.34,.24,1):new vec4(.76,.57,1,1)):played?new vec4(.4,1,.66,1):i===cue?AMBER:this.hovered.has(i)?SECONDARY:INK;
       const p=s.getTransform().getLocalPosition();p.y=3+(played?Math.sin(age*100)*.1*Math.exp(-age*8):0);s.getTransform().setLocalPosition(p);
     });
     for(let i=this.flies.length-1;i>=0;i--) {

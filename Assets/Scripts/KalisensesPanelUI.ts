@@ -36,6 +36,7 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private methodButtons:Record<string,Text>={};
   private panels:Record<string,SceneObject>={};
   private status!:Text; private feedback!:Text; private results!:Text; private tempo!:Text;
+  private pauseLabel!:Text;
   public cueText="";
   public tutorialView:TutorialView|null=null;
   private tutorialTitle!:Text;private tutorialCaption!:Text;private tutorialCue!:Text;private tutorialStatus!:Text;
@@ -73,10 +74,11 @@ export class KalisensesPanelUI extends BaseScriptComponent {
     r=this.row(f);this.button(r,"Amazing Grace",15,()=>this.onAction.invoke("song0"));this.button(r,"Silent Night",15,()=>this.onAction.invoke("song1"));
     r=this.row(f);this.button(r,"Scarborough Fair",19,()=>this.onAction.invoke("song2"));
     r=this.row(f);this.button(r,"Slower -10",10,()=>this.onAction.invoke("slower"));this.tempo=this.label(r,"60 BPM","body",3,8);this.button(r,"Faster +10",10,()=>this.onAction.invoke("faster"));
+    this.label(f,"Play the tine when the\nglowing orb reaches it.","body",4.5);
     this.button(f,"Return to Menu",17,()=>this.onAction.invoke("menu"));
     f=this.panel("free");this.label(f,"FREE PLAY","title",3);this.freeHelp=this.label(f,"Press, release, play again.","body",4);this.button(f,"Return to Menu",17,()=>this.onAction.invoke("menu"));
-    f=this.panel("performance");this.status=this.label(f,"Ready","title",3);this.feedback=this.label(f,"Follow the highlighted tine","body",2);
-    r=this.row(f);this.button(r,"Restart",13,()=>this.onAction.invoke("restart"));this.button(r,"Return to Menu",17,()=>this.onAction.invoke("menu"));
+    f=this.panel("performance");this.status=this.label(f,"Ready","title",3);this.feedback=this.label(f,"Play when the orb reaches the tine","body",2.5);
+    r=this.row(f);this.pauseLabel=this.button(r,"Pause",8,()=>this.onAction.invoke("pause"));this.button(r,"Restart",9,()=>this.onAction.invoke("restart"));this.button(r,"Return to Menu",13,()=>this.onAction.invoke("menu"));
     f=this.panel("results");this.label(f,"YOU MADE MUSIC","title",3);this.results=this.label(f,"","body",4);
     r=this.row(f);this.button(r,"Replay",10,()=>this.onAction.invoke("restart"));this.button(r,"Free Play",12,()=>this.onAction.invoke("free"));
     this.button(f,"Choose Another Song",22,()=>this.onAction.invoke("select"));
@@ -92,7 +94,8 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   private panel(name:string):FlexLayout {
     const s=this.object("Panel-"+name,this.sceneObject);this.panels[name]=s;
     if(name==="tutorial")s.getTransform().setLocalPosition(new vec3(0,1,0));
-    const height=name==="tutorial"?36:name==="input"?31:name==="select"?28:name==="results"?24:name==="placement"?22:name==="menu"?26:15;
+    if(name==="select")s.getTransform().setLocalPosition(new vec3(0,1.5,0));
+    const height=name==="tutorial"?36:name==="input"?31:name==="select"?34:name==="results"?24:name==="placement"?22:name==="menu"?26:15;
     const backing=this.object("Backing-"+name,s);
     const plate=backing.createComponent(BackPlate.getTypeName()) as BackPlate;plate.size=new vec2(34,height);plate.style="simple";
     plate.onInitialized.add(()=>{const rr=backing.getComponent(RoundedRectangle.getTypeName()) as RoundedRectangle;rr.gradient=false;rr.backgroundColor=DEEP;rr.opacity=this.backingOpacity;});
@@ -147,6 +150,7 @@ export class KalisensesPanelUI extends BaseScriptComponent {
   }
   public show(mode:string) {Object.keys(this.panels).forEach(k=>this.panels[k].enabled=k===mode);}
   public setTempo(bpm:number) {this.tempo.text=bpm+" BPM";}
+  public setPaused(paused:boolean) {if(this.pauseLabel)this.pauseLabel.text=paused?"Resume":"Pause";}
   public setCue(value:string,feedback:string,color:vec4) {this.cueText=value;this.status.text=value;this.feedback.text=feedback;this.feedback.textFill.color=color;}
   public setResults(percent:number,correct:number,incorrect:number,missed:number) {this.results.text=percent+"%  •  Keep your light growing!\nCorrect "+correct+"    Incorrect "+incorrect+"    Missed "+missed;}
   // Labels live beside measured physical tines, rather than in a flat menu layout.

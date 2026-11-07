@@ -15,7 +15,7 @@ const TRACKS:AudioTrackAsset[]=[
   requireAsset("../GeneratedSFX/E4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/G4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/B4.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/D5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/F5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/A5.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/C6.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/E6.wav") as AudioTrackAsset];
-type Mode="menu"|"tutorial"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"results";
+type Mode="menu"|"tutorial"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"paused"|"results";
 @component
 export class KalisensesMain extends BaseScriptComponent {
   @input @hint("World-space UIKit views") ui!:KalisensesPanelUI;
@@ -27,6 +27,7 @@ export class KalisensesMain extends BaseScriptComponent {
   public mode:Mode="menu";public bpm=60;public songIndex=0;public score:PerformanceScore|null=null;
   public plays=0;public lastNote="";public lastIndex=-1;public lastAudio:AudioComponent|null=null;
   public countInPulses=0;public startMs=0;public ready=false;
+  public pausedAt=0;private resumeMode:"countin"|"playing"="playing";
   public inputMethod:InputMethod="physical";
   public tutorial!:KalisensesTutorial;public narration!:KalisensesNarration;
   private tutorialHands:()=>{tracked:boolean;attempting:boolean}=()=>({tracked:false,attempting:false});
@@ -108,9 +109,15 @@ export class KalisensesMain extends BaseScriptComponent {
     if(key===Keys.Space&&this.mode==="input"){this.action("menu");return true;}
     const command=commands.get(key);if(command)this.action("tutorial:"+command);return true;
   }
-  private stop() {this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});if(this.click)this.click.stop(false);if(this.narration)this.narration.stop();this.queued=[];this.held=this.codes.map(k=>KeyboardManager.isKeyPressed(k));this.feedback="";}
+  private stop() {this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});if(this.click)this.click.stop(false);if(this.narration)this.narration.stop();if(this.instrument.followCues)this.instrument.clearFollowFeedback();this.ui.setPaused(false);this.queued=[];this.held=this.codes.map(k=>KeyboardManager.isKeyPressed(k));this.feedback="";}
   public action(action:string) {
     if(this.interactionsBlocked)return;
+    if(action==="pause") {
+      const now=getTime()*1000;
+      if(this.mode==="countin"||this.mode==="playing") {this.resumeMode=this.mode;this.pausedAt=now;this.mode="paused";this.queued=[];this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});this.click.stop(false);this.ui.setPaused(true);}
+      else if(this.mode==="paused"&&this.score) {const delta=now-this.pausedAt;this.startMs+=delta;this.score.targets.forEach(t=>t.time+=delta);this.mode=this.resumeMode;this.ui.setPaused(false);}
+      return;
+    }
     if(action==="tutorial") {this.stop();this.score=null;this.mode="tutorial";this.ui.show("tutorial");this.tutorial.start(getTime());return;}
     if(action.startsWith("tutorial:")) {
       const command=action.slice(9);
@@ -171,18 +178,19 @@ export class KalisensesMain extends BaseScriptComponent {
       if(this.mode==="playing" && p.time<this.startMs)return;
       this.pluck(p.index);
       if(this.mode==="playing" && this.score) {
-        const ok=this.score.press(NOTES[p.index],p.time);this.feedback=ok?"✓ Correct":"× Try the highlighted key";this.feedbackColor=ok?new vec4(.4,1,.65,1):new vec4(1,.72,.3,1);this.feedbackUntil=now+600;
+        const ok=this.score.press(NOTES[p.index],p.time);this.instrument.showOutcome(p.index,ok?"correct":"incorrect",now/1000);this.feedback=ok?"✓ Correct":"× Try the glowing tine";this.feedbackColor=ok?new vec4(.4,1,.65,1):new vec4(1,.45,.32,1);this.feedbackUntil=now+600;
       }
     });
     let cue=-1;
     if(this.mode==="playing" && this.score) {
+      this.score.targets.forEach(t=>{if(!t.judged&&now>t.time+400)this.instrument.showOutcome(NOTES.indexOf(t.note),"missed",now/1000);});
       const missed=this.score.expire(now);
       if(missed) {this.feedback="— Missed • keep going";this.feedbackColor=new vec4(.75,.6,.95,1);this.feedbackUntil=now+600;}
       const next=this.score.targets.find(t=>!t.judged);
       if(next) {cue=NOTES.indexOf(next.note);const remaining=(next.time-now)/1000;
-        const bar="●"+"·".repeat(Math.max(0,Math.min(10,Math.ceil(remaining*10))));
-        this.ui.setCue(next.note+"   [ "+LETTERS[cue]+" ]   "+bar,now<this.feedbackUntil?this.feedback:(remaining<=.4?"Play now":"Approaching  "+remaining.toFixed(1)+"s"),now<this.feedbackUntil?this.feedbackColor:new vec4(.9,1,1,1));
+        this.ui.setCue(next.note+"   [ "+LETTERS[cue]+" ]",now<this.feedbackUntil?this.feedback:(remaining<=0?"Play now":"Play when the orb reaches the tine"),now<this.feedbackUntil?this.feedbackColor:new vec4(.9,1,1,1));
       }
+      else if(now<this.feedbackUntil)this.ui.setCue("Keep going",this.feedback,this.feedbackColor);
       const last=this.score.targets[this.score.targets.length-1];
       if(last && now>last.time+400) {
         this.mode="results";this.stop();this.ui.setResults(this.score.percent,this.score.correct,this.score.incorrect,this.score.missed);this.ui.show("results");this.instrument.celebrate(now/1000);print("[Kalisenses] RESULTS "+JSON.stringify({percent:this.score.percent,correct:this.score.correct,incorrect:this.score.incorrect,missed:this.score.missed}));
@@ -194,6 +202,10 @@ export class KalisensesMain extends BaseScriptComponent {
       else this.tutorialBeat=-1;
       this.ui.updateTutorialDemo(now/1000);
     }
+    if(this.score&&(this.mode==="countin"||this.mode==="playing"||this.mode==="paused")) {
+      this.instrument.followCues.update(this.score.targets,this.mode==="paused"?this.pausedAt:now,this.bpm);
+      if(this.mode==="paused"){this.instrument.followCues.pulsing=[];this.instrument.followCues.pulseLevels.fill(0);this.ui.setCue("Paused","Resume when you are ready",new vec4(.9,1,1,1));}
+    } else this.instrument.followCues.clear();
     this.instrument.updateVisuals(now/1000,cue);
   }
   public noteDown(source:InputMethod,index:number,contact:string):boolean {
