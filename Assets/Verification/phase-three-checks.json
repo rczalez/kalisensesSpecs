@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-06",
+  "environment": "Lens Studio 5.23.2 laptop preview, SPECS 27 Interactive Sunlit Room",
+  "hardwareValidated": false,
+  "finalFollowCuesRegression": {
+    "status": "passed",
+    "timestamp": "21:55:10.171",
+    "includesEnvironmentalFireflyChanges": true,
+    "normalStartupRestored": true,
+    "separateDeviceConnectionError": "21:56:48.365 Failed to connect with SPECS: Please check if you are logged into SPECS and Lens Studio with the same account."
+  },
+  "environmentalFireflies": {
+    "distribution": "visible environment at varied depths, world anchored after spawn",
+    "exclusions": ["instrument and labels", "visible note orbs", "active virtual pads", "active menu"],
+    "updatedEachFrame": true,
+    "scenario": "kalisenses-firefly-space",
+    "passedAt": "18:42:27.981",
+    "initialTestCorrection": "A safe skipped spawn returned 23; test now checks the intended maximum of 24 rather than requiring 24."
+  },
+  "fireflySizeAdjustment": {
+    "previousSize": 0.18,
+    "currentSize": 0.55,
+    "runtimeScaleConfirmed": true,
+    "visualScenarioPassedAt": "18:31:58.388",
+    "screenshot": "phase-three-fireflies-larger.png",
+    "lifetimeAndCapUnchanged": true,
+    "normalStartupRestored": true
+  },
+  "compile": "succeeded",
+  "checks": {
+    "followCues": {
+      "status": "passed",
+      "timestamp": "18:15:34.641",
+      "exactArrivalCases": 85,
+      "temposBpm": [
+        40,
+        50,
+        60,
+        70,
+        80
+      ],
+      "observedArrivalDelayMs": [
+        21.4,
+        39,
+        8.6,
+        32.5,
+        31.6
+      ],
+      "fireflyObservedAtSeconds": [
+        8.1,
+        10.2
+      ],
+      "maxFireflies": 24
+    },
+    "scoringLogic": {
+      "status": "succeeded",
+      "source": "run_leaf_scenario MCP response"
+    },
+    "physicalKeyboard": {
+      "status": "passed",
+      "deliveredKeys": 17,
+      "timestamp": "18:16:39.742"
+    },
+    "sharedInput": {
+      "status": "passed",
+      "simulatedSikNotes": 34,
+      "timestamp": "18:17:11.724"
+    },
+    "guidance": {
+      "status": "passed",
+      "timestamp": "18:17:37.935"
+    },
+    "menuLayout": {
+      "status": "passed after body-text readability correction",
+      "initialFailure": "18:17:43.643 AssertionError Expected true Received false on selection instruction size",
+      "timestamp": "18:18:26.608"
+    },
+    "visual": {
+      "status": "passed",
+      "timestamp": "18:19:50.742"
+    },
+    "flows": {
+      "status": "passed",
+      "timestamp": "18:20:43.726",
+      "source": "run_leaf_scenario response and Lens-side DefaultLeafScenarioManager PASSED line",
+      "scope": "accelerated song completion and result controls"
+    }
+  },
+  "evidence": [
+    "I 18:14:49.277 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:41] [PHASE3] live 40 BPM arrival frame +21.4ms; correct/incorrect/missed preserved",
+    "I 18:14:55.697 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:41] [PHASE3] live 50 BPM arrival frame +39.0ms; correct/incorrect/missed preserved",
+    "I 18:15:01.125 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:41] [PHASE3] live 60 BPM arrival frame +8.6ms; correct/incorrect/missed preserved",
+    "I 18:15:05.832 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:41] [PHASE3] live 70 BPM arrival frame +32.5ms; correct/incorrect/missed preserved",
+    "I 18:15:09.991 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:41] [PHASE3] live 80 BPM arrival frame +31.6ms; correct/incorrect/missed preserved",
+    "I 18:15:14.119 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:53] [PHASE3] PASS pause freeze/input rejection/resume shift/restart/song change/menu cleanup",
+    "I 18:15:34.640 [Preview 3] [Assets/Scripts/KalisensesFollowCuesScenario.ts:61] [ACCEPTANCE] PASS Follow Along orbs, five tempos, scoring feedback, pause/restart/reset, ten-second fireflies and cap24",
+    "I 18:15:34.641 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 53.248s]PASSED: kalisenses-follow-cues",
+    "I 18:16:39.741 [Preview 3] [Assets/Scripts/KalisensesKeyboardScenario.ts:15] [ACCEPTANCE] PASS 17 preview-delivered keys; held/chord hardware checks separate",
+    "I 18:16:39.742 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 15.779s]PASSED: kalisenses-17-keyboard",
+    "I 18:17:11.724 [Preview 3] [Assets/Scripts/KalisensesInputScenario.ts:62] [ACCEPTANCE] PASS input menu, 34 SIK note events, hold/cross/release guards, shared scoring and inactive-source guard",
+    "I 18:17:11.724 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 20.762s]PASSED: kalisenses-input-methods",
+    "I 18:17:37.935 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  9.112s]PASSED: kalisenses-guidance",
+    "I 18:17:43.643 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] E [DefaultLeafScenarioManager] [  1.437s]FAILED: kalisenses-menu-layout - AssertionError: Expected: \"true\" - Received: \"false\"",
+    "I 18:18:26.608 [Preview 3] [Assets/Scripts/KalisensesMenuLayoutScenario.ts:38] [ACCEPTANCE] PASS all seven UI views and 17 note-pad bounds: positive text rectangles, readable type sizes, projected label centers",
+    "I 18:18:26.608 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  7.039s]PASSED: kalisenses-menu-layout",
+    "I 18:19:29.792 [Preview 3] [Assets/Scripts/KalisensesFollowVisualScenario.ts:11] [PHASE3 VISUAL] SELECT",
+    "I 18:19:38.622 [Preview 3] [Assets/Scripts/KalisensesFollowVisualScenario.ts:14] [PHASE3 VISUAL] DESCENDING",
+    "I 18:19:42.150 [Preview 3] [Assets/Scripts/KalisensesFollowVisualScenario.ts:16] [PHASE3 VISUAL] PAUSED",
+    "I 18:19:47.733 [Preview 3] [Assets/Scripts/KalisensesFollowVisualScenario.ts:17] [PHASE3 VISUAL] RESUMED",
+    "I 18:19:50.741 [Preview 3] [Assets/Scripts/KalisensesFollowVisualScenario.ts:18] [ACCEPTANCE] PASS held visual views, real song, correct note, pause and resume controls",
+    "I 18:19:50.742 [Preview 3] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 20.956s]PASSED: kalisenses-follow-visual"
+  ],
+  "startup": {
+    "errors": [],
+    "prints": [
+      "I 18:21:06.244 [Preview 3] [Assets/Scripts/KalisensesMain.ts:85] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices"
+    ],
+    "previewScenario": ""
+  },
+  "limitations": [
+    "Rendered arrival is sampled at display frames, not zero-latency output.",
+    "Actual hand recognition, optical contrast, physical comfort and sustained device performance require SPECS testing.",
+    "No sustained hardware performance profile or full real-time three-song playthrough was performed."
+  ]
+}

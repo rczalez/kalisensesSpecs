@@ -16,6 +16,9 @@ import {KalisensesTutorialScenario} from "./KalisensesTutorialScenario";
 import {KalisensesTutorialFallbackScenario} from "./KalisensesTutorialFallbackScenario";
 import {KalisensesTutorialKeyboardScenario} from "./KalisensesTutorialKeyboardScenario";
 import {KalisensesNarrationLockScenario} from "./KalisensesNarrationLockScenario";
+import {KalisensesFollowCuesScenario} from "./KalisensesFollowCuesScenario";
+import {KalisensesFollowVisualScenario} from "./KalisensesFollowVisualScenario";
+import {KalisensesFireflySpaceScenario} from "./KalisensesFireflySpaceScenario";
 @component
 export class LeafIndex extends BaseScriptComponent {
   @input @hint("Optional preview test to launch after reset. Leave empty for normal play.") previewScenario:string="";
@@ -34,6 +37,9 @@ export class LeafIndex extends BaseScriptComponent {
   }
   @scenariosIndex
   static scenariosIndex:ScenarioMetadata[]=[
+    {id:"kalisenses-follow-cues",typename:KalisensesFollowCuesScenario.getTypeName()},
+    {id:"kalisenses-follow-visual",typename:KalisensesFollowVisualScenario.getTypeName()},
+    {id:"kalisenses-firefly-space",typename:KalisensesFireflySpaceScenario.getTypeName()},
     {id:"kalisenses-narration-lock",typename:KalisensesNarrationLockScenario.getTypeName()},
     {id:"kalisenses-tutorial",typename:KalisensesTutorialScenario.getTypeName()},
     {id:"kalisenses-tutorial-fallback",typename:KalisensesTutorialFallbackScenario.getTypeName()},
