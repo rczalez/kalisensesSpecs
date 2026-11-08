@@ -44,11 +44,11 @@ export class KalisensesNarrationLockScenario extends Scenario {
     voice.setMuted(true);voice.play("intro");expect(voice.blocked).toBe(false);
     voice.setMuted(false);voice.play("not-a-clip");expect(voice.blocked).toBe(false);
     // Fast setup without narration, then a real short keyboard tap whose
-    // release lands during the tutorial's release instruction.
-    a.narration.setMuted(true);a.action("tutorial");a.action("tutorial:next");a.action("tutorial:next");a.action("confirm");a.action("tutorial:next");a.action("tutorial:next");
+    // release is reconciled during explicitly injected narration.
+    a.narration.setMuted(true);a.action("tutorial");a.action("tutorial:next");a.action("tutorial:next");a.action("confirm");a.action("tutorial:next");
     a.narration.setMuted(false);const tutorialBefore=a.plays;
-    print("[LOCK_DRIVER] 4 TUTORIAL");await until(()=>a.tutorial.step==="release",15000);expect(a.interactionsBlocked).toBe(true);
-    await until(()=>a.tutorial.step==="other",15000);expect(a.plays-tutorialBefore).toBe(1);
+    print("[LOCK_DRIVER] 4 TUTORIAL");await until(()=>a.tutorial.waitingRelease,15000);a.narration.play("sequence");expect(a.interactionsBlocked).toBe(true);
+    await until(()=>a.tutorial.step==="sequence",15000);expect(a.plays-tutorialBefore).toBe(1);
     a.narration.stop();a.action("tutorial:exit");expect(a.tutorial.active).toBe(false);
     a.action("menu");
     print("[ACCEPTANCE] PASS narration blocks all input paths/actions, drops held keyboard input, resumes after natural finish/stop/pause, and recovers from injected playback failure/start failure/stall");

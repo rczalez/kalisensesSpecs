@@ -16,7 +16,7 @@ const TRACKS:AudioTrackAsset[]=[
   requireAsset("../GeneratedSFX/E4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/G4.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/B4.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/D5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/F5.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/A5.wav") as AudioTrackAsset,
   requireAsset("../GeneratedSFX/C6.wav") as AudioTrackAsset,requireAsset("../GeneratedSFX/E6.wav") as AudioTrackAsset];
-type Mode="menu"|"tutorial"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"paused"|"results";
+type Mode="menu"|"tutorial"|"placement"|"input"|"select"|"free"|"countin"|"playing"|"paused"|"results"|"ended";
 @component
 export class KalisensesMain extends BaseScriptComponent {
   @input @hint("World-space UIKit views") ui!:KalisensesPanelUI;
@@ -29,11 +29,14 @@ export class KalisensesMain extends BaseScriptComponent {
   public plays=0;public lastNote="";public lastIndex=-1;public lastAudio:AudioComponent|null=null;
   public countInPulses=0;public startMs=0;public ready=false;
   public pausedAt=0;private resumeMode:"countin"|"playing"="playing";
+  public notesMuted=false;public recoveryMessage="";
+  private settingsReturn:"free"|"paused"|null=null;
+  private anyHandTracked:()=>boolean=()=>false;
   public inputMethod:InputMethod="physical";
   public tutorial!:KalisensesTutorial;public narration!:KalisensesNarration;
   public idle!:KalisensesIdleAmbience;
   private tutorialHands:()=>{tracked:boolean;attempting:boolean}=()=>({tracked:false,attempting:false});
-  private navigationHeld=new Set<Keys>();private tutorialBeat=-1;
+  private navigationHeld=new Set<Keys>();
   private narrationLocked=false;private narrationBeganAt=0;
   private suppressedPointers=new Set<Interactor>();
   public get interactionsBlocked():boolean {if(this.narration)this.narration.update();return this.narrationLocked;}
@@ -41,6 +44,7 @@ export class KalisensesMain extends BaseScriptComponent {
   private previewTracking:DeviceTracking|null=null;
   private watchedPointers=new Set<Interactor>();
   private releaseSubscriptions:(()=>void)[]=[];
+  public get inputWatcherCount():number {return this.watchedPointers.size;}
   private codes:Keys[]=[];private held:boolean[]=new Array(17).fill(false);private voices:AudioComponent[]=[];private voice=0;private click!:AudioComponent;
   private queued:{index:number;time:number;source:InputMethod;contact:string}[]=[];private lastBeat=-1;private feedback="";private feedbackUntil=0;private feedbackColor=new vec4(.9,1,1,1);
   private seatedPosition=new vec3(0,0,0);private seatedRotation=quat.fromEulerAngles(-43*Math.PI/180,0,0);
@@ -78,7 +82,9 @@ export class KalisensesMain extends BaseScriptComponent {
       draw:v=>this.ui.setTutorial(v),say:id=>this.narration.play(id),silence:()=>this.narration.stop(),mute:value=>this.narration.setMuted(value),
       exit:skipped=>{this.action(skipped?"free":"menu");}});
     const hands=HandInputData.getInstance();const right=hands.getHand("right"),left=hands.getHand("left");
-    this.tutorialHands=()=>({tracked:this.inputMethod==="pinch"&&this.tutorial.step==="first"?right.isTracked():this.inputMethod==="pinch"&&this.tutorial.step==="other"?left.isTracked():right.isTracked()||left.isTracked(),attempting:right.isPinching()||left.isPinching()});
+    this.anyHandTracked=()=>right.isTracked()||left.isTracked();
+    if(!global.deviceInfoSystem.isEditor())for(const hand of [left,right])this.releaseSubscriptions.push(hand.onHandLost.add(()=>this.observeTracking(this.anyHandTracked())));
+    this.tutorialHands=()=>({tracked:this.inputMethod==="pinch"&&this.tutorial.step==="first"?right.isTracked():right.isTracked()||left.isTracked(),attempting:right.isPinching()||left.isPinching()});
     this.placement.onStatus.add(status=>this.ui.setPlacementStatus(status));
     this.createEvent("KeyPressEvent").bind(e=>{
       if(this.interactionsBlocked){this.navigationHeld.add(e.key);const i=this.codes.indexOf(e.key);if(i>=0){this.held[i]=true;this.contacts.down("physical",String(i));}return;}
@@ -100,8 +106,15 @@ export class KalisensesMain extends BaseScriptComponent {
     if(locked===this.narrationLocked)return;
     this.suppressHeldPointers();this.narrationLocked=locked;this.queued=[];
     if(locked){if(this.idle)this.idle.stop(getTime());this.narrationBeganAt=getTime();this.instrument.setPinchEnabled(false);}
-    else if(this.tutorial)this.tutorial.resumeAfterNarration(Math.max(0,getTime()-this.narrationBeganAt),getTime());
+    else if(this.tutorial){this.tutorial.resumeAfterNarration(Math.max(0,getTime()-this.narrationBeganAt),getTime());this.tutorial.reconcileRelease((source,contact)=>this.contacts.isHeld(source,contact),getTime());}
+    this.voices.forEach(a=>a.volume=this.notesMuted?0:this.volume*(locked ? .25 : 1));
     this.ui.setInteractionLocked(locked);
+  }
+  /** Sensor state can be injected by LEAF; editor playback never infers real hand reliability. */
+  public observeTracking(tracked:boolean) {
+    if(!tracked&&this.inputMethod!=="physical"&&(this.mode==="countin"||this.mode==="playing")) {
+      this.action("pause");this.recoveryMessage="Hands unavailable.\nOpen hands; Resume or choose Input.";
+    }
   }
   private tutorialKey(key:Keys):boolean {
     if(!global.deviceInfoSystem.isEditor())return false;
@@ -119,10 +132,17 @@ export class KalisensesMain extends BaseScriptComponent {
   public action(action:string) {
     if(this.interactionsBlocked)return;
     if(this.idle)this.idle.activity(getTime());
+    if(action==="input"&&this.tutorial.active)this.tutorial.openedInput(getTime());
+    if(action==="notes:mute") {this.notesMuted=!this.notesMuted;this.voices.forEach(a=>a.volume=this.notesMuted?0:this.volume);this.ui.setNotesMuted(this.notesMuted);return;}
+    if(action==="end") {this.settingsReturn=null;this.stop();this.score=null;this.idle.stop(getTime());this.placement.cancel();this.instrument.clearFireflies();this.instrument.sceneObject.enabled=false;this.mode="ended";this.ui.show("ended");return;}
+    if(this.mode==="ended"&&action==="menu")this.instrument.sceneObject.enabled=true;
+    if(action==="menu"&&this.settingsReturn&&(this.mode==="input"||this.mode==="placement")) {
+      this.placement.cancel();this.mode=this.settingsReturn;this.settingsReturn=null;this.ui.setReturnToSession(false);this.ui.show(this.mode==="paused"?"performance":"free");this.ui.setPaused(this.mode==="paused");return;
+    }
     if(action==="pause") {
       const now=getTime()*1000;
       if(this.mode==="countin"||this.mode==="playing") {this.resumeMode=this.mode;this.pausedAt=now;this.mode="paused";this.queued=[];this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});this.click.stop(false);this.ui.setPaused(true);}
-      else if(this.mode==="paused"&&this.score) {const delta=now-this.pausedAt;this.startMs+=delta;this.score.targets.forEach(t=>t.time+=delta);this.mode=this.resumeMode;this.ui.setPaused(false);}
+      else if(this.mode==="paused"&&this.score) {if(this.inputMethod!=="physical"&&!global.deviceInfoSystem.isEditor()&&!this.anyHandTracked()){this.recoveryMessage="Hands still unavailable.\nChoose Input to switch methods.";return;}const delta=now-this.pausedAt;this.startMs+=delta;this.score.targets.forEach(t=>t.time+=delta);this.mode=this.resumeMode;this.recoveryMessage="";this.ui.setPaused(false);}
       return;
     }
     if(action==="tutorial") {this.stop();this.score=null;this.mode="tutorial";this.ui.show("tutorial");this.tutorial.start(getTime());return;}
@@ -140,13 +160,19 @@ export class KalisensesMain extends BaseScriptComponent {
     }
     if(action==="scan"){this.placement.scan();return;}
     if(action==="confirm"){if(this.placement.confirm())this.action("menu");return;}
+    if(action==="size:smaller"||action==="size:larger") {if(this.mode!=="placement")return;const transform=this.placement.anchor.getTransform();const size=Math.max(.8,Math.min(1.2,Math.round((transform.getLocalScale().x+(action==="size:larger"?.1:-.1))*10)/10));transform.setLocalScale(vec3.one().uniformScale(size));this.ui.setPlacementStatus("Size "+Math.round(size*100)+"% • keep the table clear.");return;}
+    if((action==="input"||action==="placement")&&!this.tutorial.active&&(this.mode==="free"||this.mode==="countin"||this.mode==="playing"||this.mode==="paused")) {
+      if(this.mode==="countin"||this.mode==="playing")this.action("pause");
+      this.settingsReturn=this.mode==="free"?"free":"paused";this.queued=[];this.voices.forEach(a=>{if(a.audioTrack)a.stop(false);});this.click.stop(false);this.instrument.clearFollowFeedback();
+      this.mode=action;this.ui.setReturnToSession(true);this.ui.show(action);if(action==="placement")this.placement.scan();return;
+    }
     if(this.placement.placed&&this.placement.scanning&&action!=="placement")this.placement.cancel();
     if(!this.placement.placed&&action!=="placement"&&action!=="scan"&&action!=="confirm"&&!(action==="input"&&this.tutorial.active)&&!(action.startsWith("input:")&&this.tutorial.active)){this.mode="placement";this.ui.show("placement");return;}
     if(action.startsWith("input:")) {const method=action.slice(6) as InputMethod;if(INPUT_NAMES[method]){this.inputMethod=method;this.queued=[];this.ui.setInputMethod(method);this.instrument.setPinchEnabled(false);if(this.tutorial.active)this.tutorial.changedMethod(getTime());}return;}
     if(action==="slower"||action==="faster") {if(this.mode==="select")this.bpm=Math.max(40,Math.min(80,this.bpm+(action==="slower"?-10:10)));this.ui.setTempo(this.bpm);return;}
     if(action.startsWith("song")){this.songIndex=Number(action.slice(4));this.beginSong();return;}
     if(action==="restart") {this.beginSong();return;}
-    this.stop();this.score=null;
+    this.settingsReturn=null;this.ui.setReturnToSession(false);this.stop();this.score=null;
     if(action==="placement") {this.mode="placement";this.ui.show("placement");this.ui.setPlacementStatus(this.placement.placed?"World anchor stays fixed as you move.\nFind Surface to place it again.":"Look at a clear, level tabletop.");if(global.deviceInfoSystem.isEditor())this.placement.scan();}
     else if(action==="input") {this.mode="input";this.ui.show("input");}
     else if(action==="free") {this.mode="free";this.ui.show("free");}
@@ -157,6 +183,7 @@ export class KalisensesMain extends BaseScriptComponent {
   public beginSong(song:Song=SONGS[this.songIndex]) {
     if(this.interactionsBlocked)return;
     if(!this.placement.placed)return;
+    this.settingsReturn=null;this.recoveryMessage="";
     this.idle.stop(getTime());
     this.stop();this.mode="countin";this.ui.show("performance");this.startMs=getTime()*1000+4*60000/this.bpm;
     let beat=0;const times=song.notes.map((_,i)=>{const t=this.startMs+beat*60000/this.bpm;beat+=song.beats[i];return t;});
@@ -164,7 +191,14 @@ export class KalisensesMain extends BaseScriptComponent {
     print("[Kalisenses] COUNTIN "+song.name+" "+this.bpm+" BPM");
   }
   private update() {
+    // Disabling a narrated note target can cancel its SIK TriggerEnd event.
+    // Observe the pointer's actual released state, without accepting new input.
+    this.watchedPointers.forEach(pointer=>{
+      if(isNull(pointer)){this.watchedPointers.delete(pointer);this.suppressedPointers.delete(pointer);return;}
+      if(!pointer.isTriggering){this.suppressedPointers.delete(pointer);const contact=String(pointer.inputType);this.noteUp("virtual",contact);this.noteUp("pinch",contact);}
+    });
     this.narration.update();if(this.narrationLocked)this.suppressHeldPointers();
+    if(!global.deviceInfoSystem.isEditor())this.observeTracking(this.anyHandTracked());
     this.idle.update(getTime(),this.mode==="menu"&&!this.narrationLocked&&!this.tutorial.active);
     if(this.previewTracking)this.previewTracking.enabled=!this.lockPreviewCamera;
     const now=getTime()*1000;
@@ -173,6 +207,7 @@ export class KalisensesMain extends BaseScriptComponent {
     // Keep the current target alive until lift/unpinch has delivered its release.
     const playable=this.mode==="free"||this.mode==="playing"||this.mode==="countin"||(this.mode==="tutorial"&&(this.tutorial.canPlay()||this.tutorial.waitingRelease));
     this.ui.setPlayable(playable);this.instrument.setPinchEnabled(!this.narrationLocked&&playable&&this.inputMethod==="pinch");
+    if(this.mode==="free")this.ui.setFreeTarget(this.inputMethod==="pinch"?this.instrument.hoveredNote:-1);
     if(this.mode==="countin") {
       const beat=Math.floor((now-(this.startMs-4*60000/this.bpm))/(60000/this.bpm));
       if(beat<4 && beat!==this.lastBeat) {this.lastBeat=beat;this.countInPulses++;this.click.play(1);}
@@ -207,13 +242,11 @@ export class KalisensesMain extends BaseScriptComponent {
     }
     if(this.mode==="tutorial") {
       if(!this.narrationLocked){const hands=this.tutorialHands();this.tutorial.update(now/1000,hands.tracked,hands.attempting,this.instrument.hoveredNote);}cue=this.tutorial.targetIndex();
-      if(!this.narrationLocked&&this.tutorial.step==="timed") {const beat=Math.floor((now/1000-this.tutorial.timedStart)*this.bpm/60);if(beat!==this.tutorialBeat){this.tutorialBeat=beat;this.click.play(1);}}
-      else this.tutorialBeat=-1;
       this.ui.updateTutorialDemo(now/1000);
     }
     if(this.score&&(this.mode==="countin"||this.mode==="playing"||this.mode==="paused")) {
       this.instrument.followCues.update(this.score.targets,this.mode==="paused"?this.pausedAt:now,this.bpm);
-      if(this.mode==="paused"){this.instrument.followCues.pulsing=[];this.instrument.followCues.pulseLevels.fill(0);this.ui.setCue("Paused","Resume when you are ready",new vec4(.9,1,1,1));}
+      if(this.mode==="paused"){this.instrument.followCues.pulsing=[];this.instrument.followCues.pulseLevels.fill(0);this.ui.setCue("Paused",this.recoveryMessage||"Resume when you are ready",new vec4(.9,1,1,1));}
     } else this.instrument.followCues.clear();
     this.instrument.updateVisuals(now/1000,cue);
   }
@@ -239,7 +272,8 @@ export class KalisensesMain extends BaseScriptComponent {
     }));
   }
   private pluck(index:number) {
-    const a=this.voices[this.voice++%this.voices.length];a.audioTrack=TRACKS[index];a.volume=this.volume;a.play(1);
+    const a=this.voices[this.voice++%this.voices.length];a.audioTrack=TRACKS[index];a.volume=this.notesMuted?0:this.volume;a.play(1);
+    if(this.mode==="free")this.ui.setFreePlayed(index,this.notesMuted);
     this.lastAudio=a;this.plays++;this.lastNote=NOTES[index];this.lastIndex=index;this.instrument.pluck(index,getTime());
     print("[Kalisenses] KEY "+LETTERS[index]+" -> "+NOTES[index]+" tine="+index+" mode="+this.mode);
   }

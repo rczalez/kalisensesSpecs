@@ -117,11 +117,12 @@ export class KalisensesInstrument extends BaseScriptComponent {
   }
   public pluck(index:number,time:number) {this.flashes[index]=time;this.spawn(time,2);}
   public celebrate(time:number) {this.spawn(time,12);}
+  public clearFireflies() {this.flies.forEach(f=>f.object.destroy());this.flies=[];this.fireflyCount=0;}
   public spawnAmbient(time:number) {if(this.flies.length<this.maxAmbientFireflies)this.spawn(time,1,true);}
   public showOutcome(index:number,kind:"correct"|"incorrect"|"missed",time:number) {
     this.outcomes=this.outcomes.filter(o=>o.index!==index&&time-o.time<.65);this.outcomes.push({index,time,kind});
   }
-  public clearFollowFeedback() {this.followCues.clear();this.outcomes=[];}
+  public clearFollowFeedback() {this.followCues.clear();this.outcomes=[];this.flashes.fill(-100);}
   private spawn(time:number,count:number,ambient=false) {
     this.refreshFireflySpace();
     for(let i=0;i<count && this.flies.length<this.maxFireflies;i++) {

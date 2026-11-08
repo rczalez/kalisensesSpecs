@@ -73,7 +73,7 @@ export class KalisensesPlacement extends BaseScriptComponent {
       if(flat.length<.01){this.pending=false;this.stable=0;return;}
       const rotation=quat.lookAt(flat.normalize(),normal);
       // Check space for the instrument, rear dock and front note pads, not just a single hit.
-      const offsets=[new vec3(-23,0,-44),new vec3(23,0,-44),new vec3(-23,0,30),new vec3(23,0,30)];
+      const offsets=[new vec3(-23,0,-44),new vec3(23,0,-44),new vec3(-23,0,30),new vec3(23,0,30)].map(v=>v.uniformScale(this.anchor.getTransform().getWorldScale().x));
       let remaining=offsets.length,valid=true;
       offsets.forEach(offset=>{
         const p=hit.position.add(rotation.multiplyVec3(offset));
