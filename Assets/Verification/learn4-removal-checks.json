@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-07",
+  "scope": "Verified in laptop preview",
+  "tutorialSteps": 11,
+  "removed": "Standalone selected-input demonstration stage previously displayed as Learn 4",
+  "firstPractice": "LEARN  4 / 11",
+  "preserved": [
+    "Learn 2 placement lesson and placement confirmation",
+    "Learn 3 input selection without replaying narration",
+    "Input priority pulse, Next continuation pulse and narration gating",
+    "First-note action audio and pinch animation"
+  ],
+  "fallback": [
+    "I 19:51:11.125 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+    "I 19:51:11.126 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+    "I 19:51:11.126 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+    "I 19:51:11.126 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+    "I 19:51:11.126 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:82] [Tutorial] STEP release",
+    "I 19:51:11.127 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP other",
+    "I 19:51:11.128 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP sequence",
+    "I 19:51:11.128 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+    "I 19:51:11.128 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+    "I 19:51:11.128 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+    "I 19:51:11.128 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+    "I 19:51:11.129 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:82] [Tutorial] STEP release",
+    "I 19:51:11.129 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP other",
+    "I 19:51:11.129 [Preview 1] [Assets/Scripts/KalisensesTutorialFallbackScenario.ts:32] [ACCEPTANCE] PASS right-before-left, release gating, active-attempt prompt suppression, one-shot tracking fallback and progress retention (injected sensor states only)",
+    "I 19:51:11.130 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.008s]PASSED: kalisenses-tutorial-fallback",
+    "I 19:51:11.130 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.008s][kalisenses-tutorial-fallback] PASSED"
+  ],
+  "recovery": {
+    "cutoff": "19:51:43.472",
+    "lines": [
+      "I 19:51:43.472 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices",
+      "I 19:51:43.681 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]RUNS: kalisenses-recovery with args: []",
+      "I 19:51:43.681 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.001s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+      "I 19:51:43.689 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+      "I 19:51:43.708 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] placement",
+      "I 19:51:43.708 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+      "I 19:51:55.358 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] placement",
+      "I 19:52:06.940 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:26] [NEXT PROMPT VISUAL] PLACEMENT",
+      "I 19:52:10.460 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:27] [TUTORIAL FLOW VISUAL] PLACEMENT",
+      "I 19:52:10.999 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] choose",
+      "I 19:52:10.999 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+      "I 19:52:43.829 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:38] [INPUT PROMPT VISUAL] PULSE",
+      "I 19:52:47.481 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE input",
+      "I 19:52:51.636 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:47] [NEXT PROMPT VISUAL] AFTER_INPUT",
+      "I 19:52:55.152 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:48] [ACCEPTANCE] PASS Next pulses after speech and replay; Input has priority on Learn 3, then Next guides continuation after selection",
+      "I 19:52:55.153 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:49] [ACCEPTANCE] PASS Learn 3 Input prompt pulses after speech, remains readable, stops on opening Input, and stays stopped after selection",
+      "I 19:52:55.324 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-physical",
+      "I 19:52:55.324 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+      "I 19:52:55.549 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:51] [TUTORIAL FLOW VISUAL] FIRST",
+      "I 19:53:01.452 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:53:01.452 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:54] [ACCEPTANCE] PASS eleven-step flow: placement retained, direct first-note practice with one action clip, Input and Next cues preserved",
+      "I 19:53:01.453 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE free",
+      "I 19:53:01.518 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=free",
+      "I 19:53:01.547 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY N -> E4 tine=9 mode=free",
+      "I 19:53:02.000 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=free",
+      "I 19:53:02.409 [Preview 1] [Assets/Scripts/KalisensesMain.ts:191] [Kalisenses] COUNTIN Recovery fixture 80 BPM",
+      "I 19:53:02.514 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=playing",
+      "I 19:53:04.842 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:65] [VALIDATION VISUAL] RECOVERY",
+      "I 19:53:09.179 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:69] [VALIDATION VISUAL] PLACEMENT",
+      "I 19:53:12.939 [Preview 1] [Assets/Scripts/KalisensesMain.ts:191] [Kalisenses] COUNTIN Amazing Grace 80 BPM",
+      "I 19:53:13.175 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:53:13.554 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:73] [VALIDATION VISUAL] ENDED",
+      "I 19:53:15.699 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:53:15.931 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+      "I 19:53:15.931 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+      "I 19:53:15.932 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+      "I 19:53:15.932 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+      "I 19:53:16.180 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=tutorial",
+      "I 19:53:16.210 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] release",
+      "I 19:53:16.210 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:82] [Tutorial] STEP release",
+      "I 19:53:16.378 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:81] [VALIDATION VISUAL] RELEASE",
+      "I 19:53:24.663 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-virtual",
+      "I 19:53:24.663 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP other",
+      "I 19:53:24.667 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:53:24.667 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:83] [ACCEPTANCE] PASS recovery: chord/hold, note mute, retained settings/score, injected tracking pause, bounded scale, session end and virtual release during speech",
+      "I 19:53:24.668 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [100.988s]PASSED: kalisenses-recovery",
+      "I 19:53:24.668 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [100.988s][kalisenses-recovery] PASSED"
+    ],
+    "photos": [
+      "C:/Users/rg-za/AppData/Local/Temp/learn4-first-with-pulses.png"
+    ]
+  },
+  "screenshot": "learn4-first-with-pulses.png",
+  "scopeNote": "Targeted state and live recovery checks were rerun. Previous complete Journey evidence predates this removal.",
+  "normalStartup": {
+    "previewScenario": "",
+    "waitForDriver": true,
+    "errors": [
+      "W 19:54:26.261 ${CONFIG_DIR}/Bundle/Plugins/[ChatTool] LEAF Plugin@5.23.0@362f6c78a8b5e47e6431049afb6a7109/dist/main.js:802 log] [LeafPlugin][LeafPlugin] Skipping plugin state save: instance was destroyed before its state finished loading. (×2)"
+    ],
+    "prints": [
+      "I 19:54:26.074 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices",
+      "I 19:54:27.851 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices"
+    ]
+  },
+  "hardwareTested": false
+}

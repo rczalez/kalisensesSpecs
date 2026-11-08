@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-07",
+  "scope": "Verified in laptop preview",
+  "behavior": {
+    "lesson": "Learn 3 / 12",
+    "periodSeconds": 1.6,
+    "palette": "Dark supporting fill to amber; label uses contrasting light/dark text and stays visible",
+    "starts": "After narration finishes, while the lesson is visible",
+    "stops": "Input menu opens, keyboard shortcut changes method, another step/view is shown, or narration locks controls",
+    "resets": "On entering Learn 3 again",
+    "audio": "No added audio; changing input stays silent"
+  },
+  "tests": {
+    "cutoff": "18:59:48.748",
+    "lines": [
+      "I 18:59:48.748 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices",
+      "I 18:59:48.947 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]RUNS: kalisenses-recovery with args: []",
+      "I 18:59:48.947 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+      "I 18:59:48.956 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+      "I 18:59:48.984 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] placement",
+      "I 18:59:48.984 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+      "I 18:59:48.984 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:20] [TUTORIAL FLOW VISUAL] PLACEMENT",
+      "I 18:59:59.380 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] choose",
+      "I 18:59:59.380 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+      "I 19:00:32.173 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:30] [INPUT PROMPT VISUAL] PULSE",
+      "I 19:00:35.826 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE input",
+      "I 19:00:38.243 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:39] [ACCEPTANCE] PASS Learn 3 Input prompt pulses after speech, remains readable, stops on opening Input, and stays stopped after selection",
+      "I 19:00:38.409 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-physical",
+      "I 19:00:38.409 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP demo",
+      "I 19:00:38.626 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:41] [TUTORIAL FLOW VISUAL] DEMO",
+      "18:59:48.947 C:\\Snapchat\\Dev\\temp\\StudioPlugins\\GUI\\Preview\\Impl\\Src\\Worker\\PreviewWorker.cpp:827 (@Es::Preview::PreviewWorker #8) Es::Preview::PreviewWorker::onSceneCreated::::operator()] [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [  0.000s]Running with runner config: {\"__leaf__log_level\":\"INFO\",\"__leaf__timeout_secs\":\"600\",\"__leaf__diagnostic_policy\":\"fallback\",\"__leaf__diagnostic_report_duration_ms\":\"-1\"}",
+      "I 19:00:44.819 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-physical",
+      "I 19:00:44.819 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+      "I 19:00:50.962 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:00:50.962 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:44] [ACCEPTANCE] PASS restored twelve-step flow: placement and action lessons narrate, input selection remains silent, first-note practice follows",
+      "I 19:00:50.962 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE free",
+      "I 19:00:51.031 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=free",
+      "I 19:00:51.057 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY N -> E4 tine=9 mode=free",
+      "I 19:00:51.533 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=free",
+      "I 19:00:51.953 [Preview 1] [Assets/Scripts/KalisensesMain.ts:191] [Kalisenses] COUNTIN Recovery fixture 80 BPM",
+      "I 19:00:52.052 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=playing",
+      "I 19:00:54.331 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:55] [VALIDATION VISUAL] RECOVERY",
+      "I 19:00:58.711 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:59] [VALIDATION VISUAL] PLACEMENT",
+      "I 19:01:02.491 [Preview 1] [Assets/Scripts/KalisensesMain.ts:191] [Kalisenses] COUNTIN Amazing Grace 80 BPM",
+      "I 19:01:02.752 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:01:03.132 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:63] [VALIDATION VISUAL] ENDED",
+      "I 19:01:05.267 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:01:05.482 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP intro",
+      "I 19:01:05.482 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP placement",
+      "I 19:01:05.483 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP choose",
+      "I 19:01:05.484 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP demo",
+      "I 19:01:05.484 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP first",
+      "I 19:01:05.735 [Preview 1] [Assets/Scripts/KalisensesMain.ts:280] [Kalisenses] KEY B -> C4 tine=8 mode=tutorial",
+      "I 19:01:05.762 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] release",
+      "I 19:01:05.762 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:83] [Tutorial] STEP release",
+      "I 19:01:05.974 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:71] [VALIDATION VISUAL] RELEASE",
+      "I 19:01:14.243 [Preview 1] [Assets/Scripts/KalisensesNarration.ts:37] [Tutorial audio] action-virtual",
+      "I 19:01:14.243 [Preview 1] [Assets/Scripts/KalisensesTutorial.ts:42] [Tutorial] STEP other",
+      "I 19:01:14.247 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:01:14.248 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:01:14.248 [Preview 1] [Assets/Scripts/KalisensesRecoveryScenario.ts:73] [ACCEPTANCE] PASS recovery: chord/hold, note mute, retained settings/score, injected tracking pause, bounded scale, session end and virtual release during speech",
+      "I 19:01:14.249 [Preview 1] [Assets/Scripts/KalisensesMain.ts:181] [Kalisenses] MODE menu",
+      "I 19:01:14.249 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 85.302s]PASSED: kalisenses-recovery",
+      "I 19:01:14.249 [Preview 1] [Packages/Leaf.lspkg/Utils/common/Logger.ts:89] I [DefaultLeafScenarioManager] [ 85.302s][kalisenses-recovery] PASSED"
+    ],
+    "photos": [
+      "C:/Users/rg-za/AppData/Local/Temp/tutorial-input-pulse-final-0.png",
+      "C:/Users/rg-za/AppData/Local/Temp/tutorial-input-pulse-final-1.png",
+      "C:/Users/rg-za/AppData/Local/Temp/tutorial-input-pulse-final-2.png"
+    ]
+  },
+  "visualEvidence": [
+    "learn3-input-pulse-dim.png",
+    "learn3-input-pulse-bright.png"
+  ],
+  "implementationNote": "The first screenshots showed that changing only a state color did not visibly pulse the themed fill. The final pulse uses a temporary solid-color visual with direct color updates, then restores the original UIKit color behavior and fill type. The final test samples rendered baseColor, not only target state values.",
+  "normalStartup": {
+    "previewScenario": "",
+    "waitForDriver": true,
+    "errors": [
+      "W 19:02:14.167 ${CONFIG_DIR}/Bundle/Plugins/[ChatTool] LEAF Plugin@5.23.0@362f6c78a8b5e47e6431049afb6a7109/dist/main.js:802 log] [LeafPlugin][LeafPlugin] Skipping plugin state save: instance was destroyed before its state finished loading. (×2)"
+    ],
+    "prints": [
+      "I 19:02:13.996 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices",
+      "I 19:02:15.754 [Preview 1] [Assets/Scripts/KalisensesMain.ts:97] [Kalisenses] READY 17 keys, L=B4, two modes, 32 voices"
+    ]
+  },
+  "hardwareTested": false
+}

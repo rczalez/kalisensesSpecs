@@ -1,13 +1,13 @@
 ---
-status: laptop-prototype-updated-validation-pending
-last_updated: 2026-11-06
+status: laptop-validation-complete-device-testing-pending
+last_updated: 2026-11-07
 ---
 
 # Design brief: Kalisenses
 
 ## Current scope
 
-This brief describes the current laptop implementation and the intended Specs experience. It incorporates Phase One's spatial and visual refinement, Phase Two's guided tutorial and fallback behavior, and the revised pinch demonstration. Implemented features, preview checks, and hardware-dependent claims are distinguished below; this document does not declare final Phase Two or Specs acceptance.
+This brief describes the current laptop implementation and the intended Specs experience. It incorporates spatial refinement, guided tutorials, Follow Along orbs, fireflies-only idle ambience and the completed laptop validation review. Implemented features, preview checks and hardware-dependent claims are distinguished below. Laptop acceptance is scoped to the automated and visual evidence in the review; Specs acceptance and human usability remain unverified.
 
 ## The one spatial moment
 
@@ -24,7 +24,7 @@ The intended glasses experience uses the user's surroundings and leaves the play
 - The laptop camera looks downward at approximately 43 degrees, with the instrument about 65 cm below and 60 cm in front of the starting eye position. All 17 tines and their labels should remain visible.
 - An editor-only camera lock is implemented. Lens Studio's separate Interactive Preview navigation still responds to WASD and arrow keys; disabling only WASD has not been implemented. Preview-injected keyboard checks do not resolve the physical-key/background-navigation conflict.
 - On Specs, surface placement uses supported environmental sensing, checks for a stable, nearly horizontal surface and additional footprint samples, then requires explicit confirmation. The instrument and dock stay together after placement.
-- The placement flow includes Find Surface, Confirm Placement, retry and status messages. The laptop explains that its virtual tabletop is already ready.
+- The placement flow includes Find Surface, Confirm Placement, retry, status messages and Smaller/Larger controls bounded to 80–120%. Size changes apply to the common anchor and the sampled surface footprint. The laptop explains that its virtual tabletop is already ready.
 - Real surface sensing, footprint suitability, anchoring drift and placement comfort are implemented device-validation tasks, not established hardware results.
 - Fireflies remain beside the instrument, outside the key and label area, with a population cap and fading lifetime. Guidance and effects must not obscure notes.
 
@@ -56,6 +56,10 @@ Free Play and Follow Along remain the two gameplay modes. A separate Input Metho
 | Pinch Gesture | Aim the SIK hand ray at a tine and use hover feedback to identify the target. Bring thumb and index together once, then open them before another note. |
 
 All methods share the same note-playing path for audio, tine highlights, fireflies and scoring. A held contact cannot repeat notes by crossing targets or changing views. Release and repress/lift/unpinch rearm it. Release away from a target is handled where supported; tracking loss and focus-loss behavior still need manual checks.
+
+Opening Input or Placement during a song pauses it and retains earned score and song position. Returning leaves the song paused until Resume; Free Play returns to Free Play. Actual loss of both tracked hands conservatively pauses a hand-input performance and offers Resume or Input. This policy passed injected-state preview checks; real tracking and recovery-control reach remain device tasks.
+
+Performance controls include Input, Placement and Mute notes; Free Play includes Input and Mute notes. End session stops audio/effects and hides the instrument, with Start again available. Closing the Lens itself uses the Specs system controls or the editor preview.
 
 Menus use labeled SIK/UIKit controls. Physical keyboard input is a separate supported laptop path and must remain usable. Simultaneous-key software handling and overlapping audio voices are implemented; physical keyboard rollover and real two-hand performance remain validation tasks.
 
@@ -134,21 +138,26 @@ Learn to Play opens a progressive tutorial with short captions, offline audio na
 ### Learning progression
 
 1. Introduce the instrument, amber guidance and the absence of tutorial scoring.
-2. Explain placement and walk through the placement view.
-3. Choose an input method; allow changes later without restarting.
-4. Demonstrate the selected action. For pinch, teach aiming before thumb/index contact, then opening to release.
-5. Highlight C4 and wait for the correct note. Wrong notes may sound, but do not advance the target.
-6. Teach release explicitly. Holding one contact makes only one note.
-7. After success, invite the other hand. Pinch practice asks for the right hand first, then the left; keyboard/pad practice does not enforce hand identity.
-8. Practice C4–D4–E4–C4, waiting for each correct note and release.
-9. Play a simple 42-note C-major arrangement of Twinkle, Twinkle, Little Star in untimed mode.
-10. Offer optional pulse practice, or let the user skip to Free Play.
+2. Explain placement with placement.wav. Next opens placement controls; confirmation is required before continuing.
+3. Choose an input method, with choose.wav on entry. Changing the selected method stays silent and preserves progress.
 
-Pulse practice uses the selected beginner tempo, four lead-in beats, the existing click and a 400 ms early tolerance. Early notes can be retried and late notes remain available indefinitely. There are no missed-note or incorrect-note penalties. This forgiving tutorial mode is separate from scored Follow Along.
+   On Learn 3, the Input button pulses between its supporting surface color and amber every 1.6 seconds, with a readable contrasting label and the hint “Press Input to choose how to play.” The pulse starts after narration unlocks interaction. Opening Input or using the keyboard input-method shortcut acknowledges it; returning from selection does not restart it. It resets on a new visit to Learn 3 and stops during narration or outside this lesson. [Preview checks](../Assets/Verification/learn3-input-pulse-checks.json) cover rendered color variation and restoration of the normal button style.
+4. Highlight C4 and wait for the first correct note, retaining its input instructions, action audio and pinch demonstration. Wrong notes may sound, but do not advance the target.
+5. Proceed directly from first-note release to C4–D4–E4–C4 practice, waiting for each correct note and release. Either hand can play the practice sequence.
+6. Play a simple 42-note C-major arrangement of Twinkle, Twinkle, Little Star in untimed mode.
+7. Celebrate the melody. Next finishes the tutorial; Skip opens Free Play.
+8. Celebrate completion and open Free Play.
+
+There are eight tutorial steps. The standalone demonstration, release, other-hand repeat-note and timed-practice lessons are removed. Placement remains LEARN 2 / 8, input choice LEARN 3 / 8, and first-note practice LEARN 4 / 8. The first correct note waits for release, then advances directly to sequence practice at LEARN 5 / 8 without separate release narration. Holding one contact still makes only one note. The initial pinch exercise uses the right hand; either hand can play subsequent practice. Input and Next pulses remain unchanged.
+
+The current eight-step flow passed the full narrated Tutorial LEAF scenario on 2026-11-07 at 20:50:51 (275.775 seconds). It verified the full untimed melody, direct celebration-to-completion transition, replay/mute, release guards, retries, input switching, completion, skip and exit. [Completion screenshot](../Assets/Verification/learn8-completion.png) and [checks](../Assets/Verification/learn8-removal-checks.json) record this version. Previous Journey and Recovery results remain historical; hardware interaction reliability and comfort still require SPECS testing.
+
+Timed tutorial practice has been removed. Tutorial melody practice remains untimed and free of score penalties. Timed playing, tempo selection, timing tolerance and scoring remain available in Follow Along.
 
 ### Narration and recovery controls
 
 - Between narration clips, Replay restarts the current instruction and the gesture demonstration from its open pose.
+- After narration, Next pulses amber every 1.6 seconds on steps that offer Next. Learn 3 first highlights Input; after opening input selection or changing method with the keyboard shortcut, Next becomes the highlighted action. Only one action pulses at a time. Pulses stop during speech or hidden views and restore the original button style. Note-playing steps keep their note guidance instead of showing a Next cue. [Preview evidence](../Assets/Verification/tutorial-next-pulse-checks.json) includes rendered color checks, replay suppression/resumption and the Input-to-Next handoff.
 - Mute/Unmute can be selected between clips and affects subsequent narration; captions remain available.
 - Help repeats guidance and enlarges the pinch demonstration when controls are available.
 - Input opens the existing input choices without resetting the current step or melody position.
@@ -157,7 +166,7 @@ Pulse practice uses the selected beginner tempo, four lead-in beats, the existin
 - Missing or unstable hand tracking produces a brief explanation and offers another input, once per input selection. The policy is implemented and tested with injected sensor states; real tracking reliability remains unverified.
 - If tracking is lost while waiting for release, changing to another input preserves the earned note and allows tutorial progression. The old held source still needs its own release before it can play again.
 - Virtual Keyboard still needs tracked hands on Specs. Physical Keyboard is the laptop fallback; usable fallback options on the intended device setup require validation.
-- Sixteen local prototype narration clips are included. No runtime network speech service is required. Perceived clarity, pronunciation and audio mixing still need listening review.
+- Sixteen local narration clips are referenced by the current tutorial. No runtime network speech service is required. Perceived clarity, pronunciation and audio mixing still need listening review.
 
 ### Interaction lock during narration
 
@@ -166,6 +175,10 @@ While a TutorialNarration clip plays, disable all Lens input: physical note/navi
 Discard inputs received during playback. Do not buffer notes or menu actions. A key, touch or pinch held through the end must be released before a fresh activation is accepted. Release bookkeeping continues so held inputs cannot replay automatically. Pause tutorial progression and practice timing during narration.
 
 Restore controls on natural completion or interruption. Failed starts, thrown playback errors, pauses and stalled playback must also release the lock. A failed delayed start is stopped before unlocking to prevent it beginning later with controls active. Muted or missing clips do not leave input locked. These are Lens controls; Lens Studio's separate built-in preview-navigation shortcuts are outside the runtime lock.
+
+Disabling note targets can cancel SIK's release callback. Observe the pointer's released state and reconcile the tutorial's held contact on narration unlock, without replaying blocked actions. Existing note tails duck to 25% under narration. The introduction lasts 17.61 seconds. Placement uses placement.wav, input choice uses choose.wav, and first-note practice uses the selected input's action clip. There is no extra action-clip playback in a separate demonstration lesson. The removed release and timed lessons have no active audio, caption or generation entries; their WAVs remain unused assets. The transition recording now invites users to finish the tutorial. Offline generation validates a temporary clip before replacing working audio.
+
+Each lesson narrates on entry. Opening Input Method, selecting any method, and returning with Done do not replay narration. Captions, input labels and retained progress update silently. Explicit Replay/Help and entry into subsequent tutorial steps still provide narration. [Current verification](../Assets/Verification/learn4-removal-checks.json) records placement, direct first-note entry, silent input selection, attention pulses and normal startup.
 
 ### Revised pinch demonstration
 
@@ -190,14 +203,18 @@ These controls do not replace any musical key:
 
 ## Verification status and acceptance criteria
 
-[Phase One verification](../Assets/Verification/PhaseOneVerification.md) records ten passing laptop checks and one inconclusive reach simulation. [Phase Two verification notes](../Assets/Verification/PhaseTwoVerification.md) describe the tutorial implementation and test scope; those notes remain a draft pending final evidence/report consolidation.
+[Current spatial validation review](../Assets/Verification/ValidationReview.md) is the authoritative completed laptop checklist, with screenshots, sixteen passing LEAF scenarios, two complete agent journeys, failures and fixes, and explicit device/human testing tasks. [Machine-readable evidence](../Assets/Verification/validation-checks.json) records acceptance logs and scope. Earlier [Phase One verification](../Assets/Verification/PhaseOneVerification.md) and [Phase Two notes](../Assets/Verification/PhaseTwoVerification.md) remain historical evidence rather than final current acceptance reports.
+
+Follow Along uses pooled amber orbs that descend to the tines at scheduled note times. Five tempos (40–80 BPM), count-in, pause/resume, restart and song changes passed preview checks; the existing timing tolerance and scoring remain unchanged. Correct/incorrect/missed feedback includes text or symbols. Two real-time agent-driven songs achieved 33 correct notes and no errors using simulated SIK delivery.
+
+Idle ambience starts after approximately ten seconds on the main menu. It consists only of gently drifting fireflies: no idle song or extra ambience audio. Spawning stops on interaction and remains disabled during tutorial/play modes. Fireflies last approximately ten seconds, fade smoothly and avoid projected instrument/menu/cue/pad bounds. Idle emission is 2.25 per second, with both the ambient and total population capped at 24. A 23-round lifecycle check showed constant scene/audio/watcher counts after UI warm-up; this is not device performance evidence.
 
 | Area | Confirmed findings | Remaining acceptance work |
 | --- | --- | --- |
 | Keyboard | All 17 mappings, injected hold/repress and overlapping keys passed earlier preview checks. The untimed tutorial passed 55 preview-delivered keyboard prompts. | Physical focus loss, capitalization/modifiers, rollover and native preview-navigation conflicts. |
 | Layout and style | Tabletop layout, labels, menus, input pads and guidance were inspected in preview. | Readability and comfort on an additive Specs display. |
 | Gameplay | Shared note events, scoring boundaries, Free Play and accelerated completion/replay of the three existing songs passed checks. | Real-time listening/playthroughs and perceived audio latency. |
-| Tutorial | LEAF runs passed progression, replay/mute, retries/release, input switching, untimed melody, accelerated timed practice, completion, skip and exit. | Final verification/report consolidation after the latest visual changes. |
+| Tutorial | Current eight-step narrated LEAF run passed progression, replay/mute, retries/release, input switching, untimed melody, direct completion, skip and exit. Previous keyboard Journey results predate timed-lesson removal. | Beginner human learning and accessibility evaluation. |
 | Recovery | Injected-state checks passed prompt suppression, hand order, tracking fallback and progress retention. | Actual tracking loss/recovery, two-hand behavior and fallback availability on Specs. |
 | Revised pinch animation | Compilation and visual playback passed; open and contact poses were inspected. | The latest native MCP pinch attempt on Tine-C4 timed out waiting for onTriggerStart after 5 seconds. Live interaction verification remains incomplete. |
 | Surface placement | Editor behavior, surface suitability rules and the shared world anchor were checked. | Real surface sensing, permissions, footprint checks and anchor stability on hardware. |
