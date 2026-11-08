@@ -1,0 +1,10 @@
+Generated with the built-in image-generation tool.
+
+Use case: ads-marketing
+Asset type: Devpost project thumbnail, landscape 3:2 composition, high resolution.
+Create a polished promotional illustration for the existing project "KaliSenses", a beginner-friendly spatial AR kalimba music experience for SPECS glasses.
+Scene: a real wooden tabletop in a softly blurred, welcoming room at dusk. The central hero is a beautiful 17-tine kalimba resting flat on the tabletop, viewed from a slightly elevated three-quarter angle. Realistic cream/brass metal tines in a symmetric alternating-length fan on a warm dark wooden body. Above three corresponding tines, show luminous amber note orbs descending along subtle vertical light trails, spatially aligned to the instrument. One orb meets a tine with a restrained bright amber pulse. A handful of larger soft golden-green fireflies drift in the surrounding air, clear of the playing surface. Communicate depth and tabletop AR, not a website or dashboard. No menus.
+Composition: strong readable branding in upper left with dark uncluttered negative space; kalimba fills lower center and right, sufficiently large and detailed at small thumbnail size. Keep all essential content comfortably inset for cropping. Premium editorial 3D illustration with convincing tactile materials, cinematic soft illumination, crisp silhouette, sophisticated uncluttered art direction.
+Palette: amber #FF9C00 primary highlights, ochre #CC8D29, wood #99763D, dark brown #66563D and deepest #332F29 backing; warm ivory lettering. Fireflies are distinct from the amber note cues, softly luminous pale yellow-green. Avoid overly dark muddy imagery; instrument must read clearly.
+Text verbatim: "KaliSenses" large bold clean geometric sans serif. Under it in much smaller but clearly readable text: "Make music in your space".
+Only those two text lines, precise spelling. No logos of third parties, no score panels, no keyboard screenshot overlays, no headset render, no hand anatomy, no watermarks. This is a conceptual project cover illustration, not a screenshot.
