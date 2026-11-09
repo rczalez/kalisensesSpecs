@@ -1,9 +1,25 @@
 ---
 status: laptop-validation-complete-device-testing-pending
-last_updated: 2026-11-07
+last_updated: 2026-11-08
 ---
 
 # Design brief: Kalisenses
+
+## Planning foundation and implemented phases
+
+This project began with the [Devpost Learn skill pack, challengepost/learn-specs](https://github.com/challengepost/learn-specs). Its `plan-lens` workflow generated the initial `devpost/design-brief.md` inside `kalisensesSpecs/devpost/`. For a creator building a Lens for the first time, that brief made it possible to move from an idea to a structured build: it established the intended beginner, the spatial purpose, the core playing flow, and criteria for checking the result. It provided the solid foundation on which the Lens was built with CLAD in Lens Studio.
+
+This file has evolved with implementation and review. The following history distinguishes the implemented phases from later changes and from acceptance work still requiring SPECS hardware.
+
+| Phase | Implemented work | Current outcome and validation boundary |
+| --- | --- | --- |
+| **Phase One — Spatial Design and Visual Refinement** | Tabletop instrument and nearby dock; compact world-space menus; Outfit typography and amber/brown palette; brighter labels and outlines; surface-placement path and laptop tabletop fallback; separate Physical Keyboard, Virtual Keyboard and Pinch Gesture settings feeding shared note logic. Bounded resizing and footprint scaling were refined during validation. | Laptop presentation and functional checks are documented in [Phase One verification](../Assets/Verification/PhaseOneVerification.md) and the later review. Actual anchoring, reach, hand tracking and optical readability require device testing. |
+| **Phase Two — Guided Tutorial and Fallback Interactions** | Audio/caption guidance, visual pinch teaching, first-note and short-sequence practice, untimed Twinkle, unlimited retries, recovery/help, and input changes without restarting. Later added silent input selection, Input/Next attention pulses, and interaction locking/release recovery during narration. | The current tutorial has **eight lessons**, with [a full narrated LEAF pass](../Assets/Verification/learn8-removal-checks.json). Standalone demonstration, release, other-hand repetition and timed tutorial lessons were removed. Earlier Phase Two records describe historical versions. Real gesture reliability and human learning remain unverified. |
+| **Phase Three — Polish Follow Along Mode** | Pooled glowing note orbs descend to the corresponding tines on the song clock; arrival pulses indicate timing; cues stay aligned during movement/scale; correct/incorrect/missed feedback is distinct. Fireflies persist approximately ten seconds, drift and fade, with caps and exclusion regions. | Preview checks cover supported tempos, count-in, pause/resume, restart/song changes and effect behavior while preserving scoring. Hardware responsiveness, comfort and sustained performance still need testing. |
+| **Phase Four — Idle Ambience and Musical Atmosphere** | Main-menu idle detection after about ten seconds; gradual ambient fireflies; activity stops spawning; gameplay and narration suppress idle ambience. Emission was increased to 2.25 per second, with a shared population limit of 24. | Final scope is **visual ambience only**: the proposed idle song and music controls were removed at the creator's request. No background music competes with narration or played notes. Device performance remains unverified. |
+| **Cross-phase validation and subsequent refinement** | Beginner journey and mistake/interrupt tests; retained song/score during settings changes; injected tracking-loss pause; note mute; End session/Start again; cue/highlight cleanup; repeated-session checks and revision-specific screenshots/logs. | [Validation review](../Assets/Verification/ValidationReview.md) separates laptop passes, historical versions, unresolved issues and device tasks. Automated completion is not proof of usability or comfort. |
+
+Implementation of a phase does not imply SPECS acceptance. The remaining sections describe the current build; historical evidence should be read against its recorded tutorial revision and test method.
 
 ## Current scope
 
@@ -166,7 +182,7 @@ Timed tutorial practice has been removed. Tutorial melody practice remains untim
 - Missing or unstable hand tracking produces a brief explanation and offers another input, once per input selection. The policy is implemented and tested with injected sensor states; real tracking reliability remains unverified.
 - If tracking is lost while waiting for release, changing to another input preserves the earned note and allows tutorial progression. The old held source still needs its own release before it can play again.
 - Virtual Keyboard still needs tracked hands on Specs. Physical Keyboard is the laptop fallback; usable fallback options on the intended device setup require validation.
-- Sixteen local narration clips are referenced by the current tutorial. No runtime network speech service is required. Perceived clarity, pronunciation and audio mixing still need listening review.
+- Fourteen local narration clips are referenced by the current tutorial. No runtime network speech service is required. Perceived clarity, pronunciation and audio mixing still need listening review.
 
 ### Interaction lock during narration
 
